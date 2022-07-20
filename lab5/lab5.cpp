@@ -1,49 +1,49 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
-#include "opencv2/core/core.hpp" // Mat class¿Í °¢Á¾ data structure ¹× »ê¼ú ·çÆ¾À» Æ÷ÇÔÇÏ´Â Çì´õ
-#include "opencv2/highgui/highgui.hpp" // GUI¿Í °ü·ÃµÈ ¿ä¼Ò¸¦ Æ÷ÇÔÇÏ´Â Çì´õ(imshow µî)
-#include "opencv2/imgproc/imgproc.hpp" // °¢Á¾ ÀÌ¹ÌÁö Ã³¸® ÇÔ¼ö¸¦ Æ÷ÇÔÇÏ´Â Çì´õ
+#include "opencv2/core/core.hpp" // Mat classì™€ ê°ì¢… data structure ë° ì‚°ìˆ  ë£¨í‹´ì„ í¬í•¨í•˜ëŠ” í—¤ë”
+#include "opencv2/highgui/highgui.hpp" // GUIì™€ ê´€ë ¨ëœ ìš”ì†Œë¥¼ í¬í•¨í•˜ëŠ” í—¤ë”(imshow ë“±)
+#include "opencv2/imgproc/imgproc.hpp" // ê°ì¢… ì´ë¯¸ì§€ ì²˜ë¦¬ í•¨ìˆ˜ë¥¼ í¬í•¨í•˜ëŠ” í—¤ë”
 using namespace cv;
 using namespace std;
 
 double gaussian(float x, double sigma) {
-	return exp(-(pow(x, 2)) / (2 * pow(sigma, 2))) / (2 * CV_PI * pow(sigma, 2)); //gaussian ½Ä¿¡ µû¸¥ °ª °è»ê ÈÄ return
+	return exp(-(pow(x, 2)) / (2 * pow(sigma, 2))) / (2 * CV_PI * pow(sigma, 2)); //gaussian ì‹ì— ë”°ë¥¸ ê°’ ê³„ì‚° í›„ return
 }
 
 float distance(int x, int y, int i, int j) {
-	return float(sqrt(pow(x - i, 2) + pow(y - j, 2))); //µÎ Á¡ »çÀÌ °Å¸®¸¦ return
+	return float(sqrt(pow(x - i, 2) + pow(y - j, 2))); //ë‘ ì  ì‚¬ì´ ê±°ë¦¬ë¥¼ return
 }
 
 
 void myMedian(const Mat& src_img, Mat& dst_img, const Size& kn_size) {
 	dst_img = Mat::zeros(src_img.size(), CV_8UC1);
 
-	int wd = src_img.cols; int hg = src_img.rows;   //¿øº»ÀÌ¹ÌÁöÀÇ width, height
-	int kwd = kn_size.width; int khg = kn_size.height; //Ä¿³ÎÀÇ width,height
+	int wd = src_img.cols; int hg = src_img.rows;   //ì›ë³¸ì´ë¯¸ì§€ì˜ width, height
+	int kwd = kn_size.width; int khg = kn_size.height; //ì»¤ë„ì˜ width,height
 	int rad_w = kwd / 2; int rad_h = khg / 2; 
 
 	uchar* src_data = (uchar*)src_img.data;
 	uchar* dst_data = (uchar*)dst_img.data;
 
-	float* table = new float[kwd*khg](); //Ä¿³ÎÅ×ÀÌºí µ¿ÀûÇÒ´ç
+	float* table = new float[kwd*khg](); //ì»¤ë„í…Œì´ë¸” ë™ì í• ë‹¹
 	float tmp;
 	
-	//°¡ÀåÀÚ¸® Á¦¿Ü ÇÈ¼¿ÀÎµ¦½Ì
+	//ê°€ì¥ìë¦¬ ì œì™¸ í”½ì…€ì¸ë±ì‹±
 	for (int c = rad_w + 1; c < wd - rad_w; c++) {
 		for (int r = rad_h + 1; r < hg - rad_h; r++) {
 			tmp = 0.f;
-			//Ä¿³ÎÀÎµ¦½Ì
+			//ì»¤ë„ì¸ë±ì‹±
 			for (int kc = -rad_w; kc <= rad_w; kc++) {
 				for (int kr = -rad_h; kr <= rad_h; kr++) {
-					tmp = (float)src_data[(r + kr) * wd + (c + kc)]; //¿øº»ÀÌ¹ÌÁöÀÇ µ¥ÀÌÅÍ¸¦ tmp¿¡ ÀúÀå
-					table[(kr + rad_h) * kwd + (kc + rad_w)] = tmp; //Å×ÀÌºí¿¡ tmp ÀúÀå
+					tmp = (float)src_data[(r + kr) * wd + (c + kc)]; //ì›ë³¸ì´ë¯¸ì§€ì˜ ë°ì´í„°ë¥¼ tmpì— ì €ì¥
+					table[(kr + rad_h) * kwd + (kc + rad_w)] = tmp; //í…Œì´ë¸”ì— tmp ì €ì¥
 					
 				}
 			}
-			sort(table, table+(kwd*khg)); //tableÀ» Á¤·Ä (alogrithm¿¡ Æ÷ÇÔµÈ sortÇÔ¼ö)
-			float med = table[kwd * khg / 2]; //Áß°£°ª Ã£±â
-			dst_data[r * wd + c] = (uchar)med; //Ä¿³Î Áß°£°ªÀ» ´ëÀÔ
+			sort(table, table+(kwd*khg)); //tableì„ ì •ë ¬ (alogrithmì— í¬í•¨ëœ sortí•¨ìˆ˜)
+			float med = table[kwd * khg / 2]; //ì¤‘ê°„ê°’ ì°¾ê¸°
+			dst_data[r * wd + c] = (uchar)med; //ì»¤ë„ ì¤‘ê°„ê°’ì„ ëŒ€ì…
 		}
 	}
 	
@@ -55,15 +55,15 @@ void myMedian(const Mat& src_img, Mat& dst_img, const Size& kn_size) {
 
 void doMedianEx() {
 	cout << "--- doMedianEx() --- \n" << endl;
-	//ÀÔ·Â
+	//ì…ë ¥
 	Mat src_img = imread("salt_pepper.png", 0);
 	if (!src_img.data) printf("No image data  \n");
 
-	//<Median ÇÊÅÍ¸µ ¼öÇà>
+	//<Median í•„í„°ë§ ìˆ˜í–‰>
 	Mat dst_img;
 	myMedian(src_img, dst_img, Size(3, 3));
 
-	//<Ãâ·Â>
+	//<ì¶œë ¥>
 	Mat result_img;
 	hconcat(src_img, dst_img, result_img);
 	imshow("doMedianEx()", result_img);
@@ -75,7 +75,7 @@ void bilateral(const Mat& src_img, Mat& dst_img, int c, int r, int diameter, dou
 	double gr, gs, wei;
 	double tmp = 0.;
 	double sum = 0.;
-	//<Ä¿³Î ÀÎµ¦½Ì>
+	//<ì»¤ë„ ì¸ë±ì‹±>
 	for (int kc = -radius; kc <= radius; kc++) {
 		for (int kr = -radius; kr <= radius; kr++) {
 			gr = gaussian((float)src_img.at<uchar>(c + kc, r + kr) - (float)src_img.at<uchar>(c, r),  sig_r);
@@ -87,7 +87,7 @@ void bilateral(const Mat& src_img, Mat& dst_img, int c, int r, int diameter, dou
 			sum += wei;
 		}
 	}
-	dst_img.at<double>(c, r) = tmp / sum; //Á¤±ÔÈ­
+	dst_img.at<double>(c, r) = tmp / sum; //ì •ê·œí™”
 }
 
 void myBilateral(const Mat& src_img, Mat& dst_img, int diameter, double sig_r, double sig_s) {
@@ -96,11 +96,11 @@ void myBilateral(const Mat& src_img, Mat& dst_img, int diameter, double sig_r, d
 	Mat guide_img = Mat::zeros(src_img.size(), CV_64F);
 	int wh = src_img.cols; int hg = src_img.rows;
 	int radius = diameter / 2;
-	//<ÇÈ¼¿ ÀÎµ¦½Ì (°¡ÀåÀÚ¸® Á¦¿Ü)>
+	//<í”½ì…€ ì¸ë±ì‹± (ê°€ì¥ìë¦¬ ì œì™¸)>
 	for (int c = radius + 1; c < hg - radius; c++) {
 		for (int r = radius + 1; r < wh - radius; r++) {
 			bilateral(src_img, guide_img, c, r, diameter, sig_r, sig_s);
-			//È­¼Òº° bilateral °è»ê
+			//í™”ì†Œë³„ bilateral ê³„ì‚°
 		}
 	}
 	guide_img.convertTo(dst_img, CV_8UC1);
@@ -109,29 +109,29 @@ void myBilateral(const Mat& src_img, Mat& dst_img, int diameter, double sig_r, d
 
 void doBilateralExs2() {
 	cout << "--- doBilateralEx() sig_s=2 ---  \n" << endl;
-	// < ÀÔ·Â > 
+	// < ì…ë ¥ > 
 	Mat src_img = imread("rock.png", 0);
 	Mat dst_img[3];
 	if (!src_img.data) printf("No image data \n");
-	// < Bilateral ÇÊÅÍ¸µ ¼öÇà >
+	// < Bilateral í•„í„°ë§ ìˆ˜í–‰ >
 	myBilateral(src_img, dst_img[0], 4, 20, 2);
 	myBilateral(src_img, dst_img[1], 4, 100, 2);
 	myBilateral(src_img, dst_img[2], 4, 999, 2);
 	
 	hconcat(dst_img[0], dst_img[1], dst_img[1]);
-	hconcat(dst_img[1], dst_img[2], dst_img[2]); //ÀÌ¹ÌÁö ÇÕÄ¡±â
+	hconcat(dst_img[1], dst_img[2], dst_img[2]); //ì´ë¯¸ì§€ í•©ì¹˜ê¸°
  
-	// < Ãâ·Â>
+	// < ì¶œë ¥>
 	imshow("sigma_s=2", dst_img[2]);
 	waitKey(0);
 }
 void doBilateralExs6() {
 	cout << "--- doBilateralEx() sig_s=6 ---  \n" << endl;
-	// < ÀÔ·Â >  
+	// < ì…ë ¥ >  
 	Mat src_img = imread("rock.png", 0);
 	Mat dst_img[3];
 	if (!src_img.data) printf("No image data \n");
-	// < Bilateral ÇÊÅÍ¸µ ¼öÇà >
+	// < Bilateral í•„í„°ë§ ìˆ˜í–‰ >
 	myBilateral(src_img, dst_img[0], 12, 20, 6);
 	myBilateral(src_img, dst_img[1], 12, 100, 6);
 	myBilateral(src_img, dst_img[2], 12, 999, 6);
@@ -140,17 +140,17 @@ void doBilateralExs6() {
 	hconcat(dst_img[1], dst_img[2], dst_img[2]);
 
 
-	// < Ãâ·Â>
+	// < ì¶œë ¥>
 	imshow("sigma_s=6", dst_img[2]);
 	waitKey(0);
 }
 void doBilateralExs18() {
 	cout << "--- doBilateralEx() sig_s=18 ---  \n" << endl;
-	// < ÀÔ·Â >  
+	// < ì…ë ¥ >  
 	Mat src_img = imread("rock.png", 0);
 	Mat dst_img[3];
 	if (!src_img.data) printf("No image data \n");
-	// < Bilateral ÇÊÅÍ¸µ ¼öÇà >
+	// < Bilateral í•„í„°ë§ ìˆ˜í–‰ >
 	myBilateral(src_img, dst_img[0], 36, 20, 18.0);
 	myBilateral(src_img, dst_img[1], 36, 100, 18.0);
 	myBilateral(src_img, dst_img[2], 36, 999, 18.0);
@@ -160,7 +160,7 @@ void doBilateralExs18() {
 	hconcat(dst_img[1], dst_img[2], dst_img[2]);
 
 
-	// < Ãâ·Â>
+	// < ì¶œë ¥>
 	imshow("sigma_s=18", dst_img[2]);
 	waitKey(0);
 }
@@ -171,12 +171,12 @@ void doCannyEx1() {
 	clock_t start, end;
 	double result;
 	
-	start = clock(); //½Ã°£ ÃøÁ¤
+	start = clock(); //ì‹œê°„ ì¸¡ì •
 	Mat src_img = imread("edge_test.jpg", 0);
 	if (!src_img.data) printf("No image data \n");
 	Mat dst_img;
 	Canny(src_img, dst_img, 220, 240);
-	end = clock(); //³¡
+	end = clock(); //ë
 	result = (double)(end - start);
 	cout << "result : " << ((result) / CLOCKS_PER_SEC) << "seconds" << endl;
 	
@@ -191,12 +191,12 @@ void doCannyEx2() {
 	clock_t start, end;
 	double result;
 
-	start = clock(); //½Ã°£ ÃøÁ¤
+	start = clock(); //ì‹œê°„ ì¸¡ì •
 	Mat src_img = imread("edge_test.jpg", 0);
 	if (!src_img.data) printf("No image data \n");
 	Mat dst_img;
 	Canny(src_img, dst_img, 100, 240);
-	end = clock(); //³¡
+	end = clock(); //ë
 	result = (double)(end - start);
 
 	cout << "result : " << ((result) / CLOCKS_PER_SEC) << "seconds" << endl;
@@ -212,12 +212,12 @@ void doCannyEx3() {
 	clock_t start, end;
 	double result;
 
-	start = clock(); //½Ã°£ ÃøÁ¤
+	start = clock(); //ì‹œê°„ ì¸¡ì •
 	Mat src_img = imread("edge_test.jpg", 0);
 	if (!src_img.data) printf("No image data \n");
 	Mat dst_img;
 	Canny(src_img, dst_img, 30, 240);
-	end = clock(); //³¡
+	end = clock(); //ë
 	result = (double)(end - start);
 
 	cout << "result : " << ((result) / CLOCKS_PER_SEC) << "seconds" << endl;
