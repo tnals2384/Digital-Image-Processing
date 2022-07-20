@@ -2,9 +2,9 @@
 #include <iomanip>
 #include <algorithm>
 #include <string.h>
-#include "opencv2/core/core.hpp" // Mat class¿Í °¢Á¾ data structure ¹× »ê¼ú ·çÆ¾À» Æ÷ÇÔÇÏ´Â Çì´õ
-#include "opencv2/highgui/highgui.hpp" // GUI¿Í °ü·ÃµÈ ¿ä¼Ò¸¦ Æ÷ÇÔÇÏ´Â Çì´õ(imshow µî)
-#include "opencv2/imgproc/imgproc.hpp" // °¢Á¾ ÀÌ¹ÌÁö Ã³¸® ÇÔ¼ö¸¦ Æ÷ÇÔÇÏ´Â Çì´õ
+#include "opencv2/core/core.hpp" // Mat classì™€ ê°ì¢… data structure ë° ì‚°ìˆ  ë£¨í‹´ì„ í¬í•¨í•˜ëŠ” í—¤ë”
+#include "opencv2/highgui/highgui.hpp" // GUIì™€ ê´€ë ¨ëœ ìš”ì†Œë¥¼ í¬í•¨í•˜ëŠ” í—¤ë”(imshow ë“±)
+#include "opencv2/imgproc/imgproc.hpp" // ê°ì¢… ì´ë¯¸ì§€ ì²˜ë¦¬ í•¨ìˆ˜ë¥¼ í¬í•¨í•˜ëŠ” í—¤ë”
 using namespace cv;
 using namespace std;
 
@@ -12,15 +12,15 @@ using namespace std;
 void createClustersInfo(Mat imgInput, int n_cluster, vector<Scalar>& clustersCenters,
 	vector<vector<Point>>& ptInClusters) { 
 
-	RNG random(cv::getTickCount()); //¹«ÀÛÀ§°ª ¼³Á¤ÇÏ´Â ÇÔ¼ö
+	RNG random(cv::getTickCount()); //ë¬´ì‘ìœ„ê°’ ì„¤ì •í•˜ëŠ” í•¨ìˆ˜
 
 	for (int k = 0; k < n_cluster; k++) {
-		//¹«ÀÛÀ§ ÁÂÇ¥ È¹µæ
+		//ë¬´ì‘ìœ„ ì¢Œí‘œ íšë“
 		Point centerKPoint;
 		centerKPoint.x = random.uniform(0, imgInput.cols);
 		centerKPoint.y = random.uniform(0, imgInput.rows);
 		Scalar centerPixel = imgInput.at<Vec3b>(centerKPoint.y, centerKPoint.x);
-		//¹«ÀÛÀ§ ÁÂÇ¥ÀÇ È­¼Ò°ªÀ¸·Î ±ºÁıº° Áß¾Ó°ªÀ» ¼³Á¤ÇÔ
+		//ë¬´ì‘ìœ„ ì¢Œí‘œì˜ í™”ì†Œê°’ìœ¼ë¡œ êµ°ì§‘ë³„ ì¤‘ì•™ê°’ì„ ì„¤ì •í•¨
 		Scalar centerK(centerPixel.val[0], centerPixel.val[1], centerPixel.val[2]);
 		clustersCenters.push_back(centerK);
 
@@ -30,13 +30,13 @@ void createClustersInfo(Mat imgInput, int n_cluster, vector<Scalar>& clustersCen
 }
 
 
-double computeColorDistance(Scalar pixel, Scalar clusterPixel) { //°Å¸®¸¦ °è»ê
+double computeColorDistance(Scalar pixel, Scalar clusterPixel) { //ê±°ë¦¬ë¥¼ ê³„ì‚°
 
 	double diffBlue = pixel.val[0] - clusterPixel[0];
 	double diffGreen = pixel.val[1] - clusterPixel[1];
 	double diffRed = pixel.val[2] - clusterPixel[2];
 
-	double distance = sqrt(pow(diffBlue, 2) + pow(diffGreen, 2) + pow(diffRed, 2));  //À¯Å¬¸®µå °Å¸®
+	double distance = sqrt(pow(diffBlue, 2) + pow(diffGreen, 2) + pow(diffRed, 2));  //ìœ í´ë¦¬ë“œ ê±°ë¦¬
 
 	return distance;
 }
@@ -49,18 +49,18 @@ void findAssociatedCluster(Mat imgInput, int n_cluster,
 			int closestClusterIndex = 0;
 			Scalar pixel = imgInput.at<Vec3b>(r, c);
 
-			for (int k = 0; k < n_cluster; k++) { //±ºÁıº° °è»ê
-				//°¢ ±ºÁı Áß¾Ó°ª°úÀÇ Â÷ÀÌ °è»ê
+			for (int k = 0; k < n_cluster; k++) { //êµ°ì§‘ë³„ ê³„ì‚°
+				//ê° êµ°ì§‘ ì¤‘ì•™ê°’ê³¼ì˜ ì°¨ì´ ê³„ì‚°
 				Scalar clusterPixel = clustersCenters[k];
 				double distance = computeColorDistance(pixel, clusterPixel);
 
-				//Â÷ÀÌ°¡ °¡Àå ÀûÀº ±ºÁıÀ¸·Î ÁÂÇ¥ÀÇ ±ºÁı ÆÇº°
+				//ì°¨ì´ê°€ ê°€ì¥ ì ì€ êµ°ì§‘ìœ¼ë¡œ ì¢Œí‘œì˜ êµ°ì§‘ íŒë³„
 				if (distance < minDistance) {
 					minDistance = distance;
 					closestClusterIndex = k;
 				}
 			}
-			//ÁÂÇ¥ ÀúÀå
+			//ì¢Œí‘œ ì €ì¥
 			ptInClusters[closestClusterIndex].push_back(Point(c, r));
 		}
 	}
@@ -72,13 +72,13 @@ double adjustClusterCenters(Mat src_img, int n_cluster,
 	
 	double diffChange;
 
-	for (int k = 0; k < n_cluster; k++) { //±ºÁıº°°è»ê
+	for (int k = 0; k < n_cluster; k++) { //êµ°ì§‘ë³„ê³„ì‚°
 		vector<Point> ptInCluster = ptInClusters[k];
 		double newBlue = 0;
 		double newGreen = 0;
 		double newRed = 0;
 
-		//Æò±Õ°ª°è»ê
+		//í‰ê· ê°’ê³„ì‚°
 		for (int i = 0; i < ptInCluster.size(); i++) {
 			Scalar pixel = src_img.at<Vec3b>(ptInCluster[i].y, ptInCluster[i].x);
 			newBlue += pixel.val[0];
@@ -89,15 +89,15 @@ double adjustClusterCenters(Mat src_img, int n_cluster,
 		newGreen /= ptInCluster.size();
 		newRed /= ptInCluster.size();
 
-		//°è»êÇÑ Æò±Õ°ªÀ¸·Î ±ºÁı Áß¾Ó°ª ´ëÃ¼
+		//ê³„ì‚°í•œ í‰ê· ê°’ìœ¼ë¡œ êµ°ì§‘ ì¤‘ì•™ê°’ ëŒ€ì²´
 		Scalar newPixel(newBlue, newGreen, newRed);
 		newCenter += computeColorDistance(newPixel, clustersCenters[k]);
-		//¸ğµç ±ºÁı¿¡ ´ëÇÑ Æò±Õ°ªµµ °°ÀÌ °è»ê
+		//ëª¨ë“  êµ°ì§‘ì— ëŒ€í•œ í‰ê· ê°’ë„ ê°™ì´ ê³„ì‚°
 		clustersCenters[k] = newPixel;
 	}
 	newCenter /= n_cluster;
 	diffChange = abs(oldCenter - newCenter);
-	//¸ğµç ±ºÁı¿¡ ´ëÇÑ Æò±Õ°ª º¯È­·® °è»ê
+	//ëª¨ë“  êµ°ì§‘ì— ëŒ€í•œ í‰ê· ê°’ ë³€í™”ëŸ‰ ê³„ì‚°
 
 	oldCenter = newCenter;
 
@@ -109,14 +109,14 @@ Mat applyFinalClusterTolmage(Mat src_img, int n_cluster,
 
 	Mat dst_img(src_img.size(), src_img.type());
 
-	for (int k = 0; k < n_cluster; k++) { //¸ğµç ±ºÁı¿¡´ëÇØ
-		vector<Point> ptInCluster = ptInClusters[k]; //±ºÁıº° ÁÂÇ¥µé
-		//·£´ı color ¸¸µé±â
+	for (int k = 0; k < n_cluster; k++) { //ëª¨ë“  êµ°ì§‘ì—ëŒ€í•´
+		vector<Point> ptInCluster = ptInClusters[k]; //êµ°ì§‘ë³„ ì¢Œí‘œë“¤
+		//ëœë¤ color ë§Œë“¤ê¸°
 		clustersCenters[k].val[0] = rand() % 255;
 		clustersCenters[k].val[1] = rand() % 255;
 		clustersCenters[k].val[2] = rand() % 255;
 		for (int j = 0; j < ptInCluster.size(); j++) {
-			//±ºÁıº° ÁÂÇ¥ À§Ä¡¿¡ ÀÖ´Â È­¼Ò °ªÀ» ÇØ´ç ±ºÁı ·£´ı°ªÀ¸·Î ´ëÃ¼
+			//êµ°ì§‘ë³„ ì¢Œí‘œ ìœ„ì¹˜ì— ìˆëŠ” í™”ì†Œ ê°’ì„ í•´ë‹¹ êµ°ì§‘ ëœë¤ê°’ìœ¼ë¡œ ëŒ€ì²´
 			dst_img.at<Vec3b>(ptInCluster[j])[0] = clustersCenters[k].val[0];
 			dst_img.at<Vec3b>(ptInCluster[j])[1] = clustersCenters[k].val[1];
 			dst_img.at<Vec3b>(ptInCluster[j])[2] = clustersCenters[k].val[2];
@@ -127,30 +127,30 @@ Mat applyFinalClusterTolmage(Mat src_img, int n_cluster,
 }
 
 Mat MyKmeans(Mat src_img, int n_cluster) {
-	vector<Scalar>clustersCenters; //±ºÁı Áß¾Ó°ª º¤ÅÍ
-	vector<vector<Point>>ptInClusters; //±ºÁıº° ÁÂÇ¥ º¤ÅÍ
+	vector<Scalar>clustersCenters; //êµ°ì§‘ ì¤‘ì•™ê°’ ë²¡í„°
+	vector<vector<Point>>ptInClusters; //êµ°ì§‘ë³„ ì¢Œí‘œ ë²¡í„°
 	double threshold = 0.001;
 	double oldCenter = INFINITY;
 	double newCenter = 0;
-	double diffChange = oldCenter - newCenter; //±ºÁı Á¶Á¤ÀÇ º¯È­·®
+	double diffChange = oldCenter - newCenter; //êµ°ì§‘ ì¡°ì •ì˜ ë³€í™”ëŸ‰
 
-	// <ÃÊ±â¼³Á¤>
-	//±ºÁı Áß¾Ó°ªÀ» ¹«ÀÛÀ§·Î ÇÒ´ç ¹× ±ºÁıº° ÁÂÇ¥°ªÀ» ÀúÀåÇÒ º¤ÅÍ ÇÒ´ç
+	// <ì´ˆê¸°ì„¤ì •>
+	//êµ°ì§‘ ì¤‘ì•™ê°’ì„ ë¬´ì‘ìœ„ë¡œ í• ë‹¹ ë° êµ°ì§‘ë³„ ì¢Œí‘œê°’ì„ ì €ì¥í•  ë²¡í„° í• ë‹¹
 	createClustersInfo(src_img, n_cluster, clustersCenters, ptInClusters);
 
-	//<Áß¾Ó°ª Á¶Á¤ ¹× È­¼Òº° ±ºÁı ÆÇº°>
-	//¹İº¹ÀûÀÎ ¹æ¹ıÀ¸·Î ±ºÁı Áß¾Ó°ª Á¶Á¤
-	//¼³Á¤ÇÑ ÀÓ°è°ª º¸´Ù ±ºÁı Á¶Á¤ÀÇ º¯È­°¡ ÀÛÀ» ¶§±îÁö ¹İº¹
+	//<ì¤‘ì•™ê°’ ì¡°ì • ë° í™”ì†Œë³„ êµ°ì§‘ íŒë³„>
+	//ë°˜ë³µì ì¸ ë°©ë²•ìœ¼ë¡œ êµ°ì§‘ ì¤‘ì•™ê°’ ì¡°ì •
+	//ì„¤ì •í•œ ì„ê³„ê°’ ë³´ë‹¤ êµ°ì§‘ ì¡°ì •ì˜ ë³€í™”ê°€ ì‘ì„ ë•Œê¹Œì§€ ë°˜ë³µ
 	while (diffChange > threshold) {
-     	//<ÃÊ±âÈ­>
+     	//<ì´ˆê¸°í™”>
 		newCenter = 0;
 		for (int k = 0; k < n_cluster; k++) { ptInClusters[k].clear(); }
-		//<ÇöÀçÀÇ ±ºÁı Áß¾Ó°ªÀ» ±âÁØÀ¸·Î ±ºÁı Å½»ö>
+		//<í˜„ì¬ì˜ êµ°ì§‘ ì¤‘ì•™ê°’ì„ ê¸°ì¤€ìœ¼ë¡œ êµ°ì§‘ íƒìƒ‰>
 		findAssociatedCluster(src_img, n_cluster, clustersCenters, ptInClusters);
-		//<±ºÁı Áß¾Ó°ª Á¶Àı>
+		//<êµ°ì§‘ ì¤‘ì•™ê°’ ì¡°ì ˆ>
 		diffChange = adjustClusterCenters(src_img, n_cluster, clustersCenters, ptInClusters, oldCenter, newCenter);
 	 }
-	//<±ºÁı Áß¾Ó°ªÀ¸·Î¸¸ ÀÌ·ç¾îÁø ¿µ»ó »ı¼º>
+	//<êµ°ì§‘ ì¤‘ì•™ê°’ìœ¼ë¡œë§Œ ì´ë£¨ì–´ì§„ ì˜ìƒ ìƒì„±>
 	Mat dst_img = applyFinalClusterTolmage(src_img, n_cluster, ptInClusters, clustersCenters);
 
 	imshow("results", dst_img);
@@ -166,23 +166,23 @@ Mat MyBgr2Hsv(Mat src_img) {
 	Mat dst_img(src_img.size(), src_img.type());
 
 	for (int y = 0; y < src_img.rows; y++) {
-		for (int x = 0; x < src_img.cols; x++) { //¸ğµç ÇÈ¼¿¿¡ ´ëÇØ
-			b = (double)src_img.at<Vec3b>(y, x)[0]/255.0; //¹üÀ§°¡ 0~255 ÀÌ±â ¶§¹®¿¡ 255·Î ³ª´©¾îÁÜ
+		for (int x = 0; x < src_img.cols; x++) { //ëª¨ë“  í”½ì…€ì— ëŒ€í•´
+			b = (double)src_img.at<Vec3b>(y, x)[0]/255.0; //ë²”ìœ„ê°€ 0~255 ì´ê¸° ë•Œë¬¸ì— 255ë¡œ ë‚˜ëˆ„ì–´ì¤Œ
 			g = (double)src_img.at<Vec3b>(y, x)[1]/255.0;
 			r = (double)src_img.at<Vec3b>(y, x)[2]/255.0;
 
 			double max, min;
-			//max(R,G,B) Ã£±â
+			//max(R,G,B) ì°¾ê¸°
 			max = (b < g) ? g : b; 
 			max = (max > r) ? max : r;
-			//min(R,G,B) Ã£±â
+			//min(R,G,B) ì°¾ê¸°
 			min = (b < g) ? b : g;
 			min = (min < r)? min : r;
 
-			//value°ªÀº max
+			//valueê°’ì€ max
 			v = max;
 
-			//saturation°ª °è»ê
+			//saturationê°’ ê³„ì‚°
 			if (v > 0) {
 				s= (max - min) / max;
 			}
@@ -191,7 +191,7 @@ Mat MyBgr2Hsv(Mat src_img) {
 				h = 0;
 			}
 
-			//hue°ª °è»ê. 0~360 ¹üÀ§
+			//hueê°’ ê³„ì‚°. 0~360 ë²”ìœ„
 			if (h < 0) { h += 360; }
 			else if (r >= max && (max - min) != 0) {
 				h = (g - b) / (max - min) ;
@@ -208,7 +208,7 @@ Mat MyBgr2Hsv(Mat src_img) {
 			h /= 360;
 			
 			
-			//dst_img¿¡ 255¸¦ ´Ù½Ã °öÇØ¼­ ±¸ÇÑ h,s,v°ª ÇÒ´ç. 
+			//dst_imgì— 255ë¥¼ ë‹¤ì‹œ ê³±í•´ì„œ êµ¬í•œ h,s,vê°’ í• ë‹¹. 
 			dst_img.at<Vec3b>(y, x)[0] = (uchar)(h*255.0); 
 			dst_img.at<Vec3b>(y, x)[1] = (uchar)(s*255.0);
 			dst_img.at<Vec3b>(y, x)[2] = (uchar)(v*255.0);
@@ -218,15 +218,15 @@ Mat MyBgr2Hsv(Mat src_img) {
 }
 
 Mat MyinRange(Mat src_img, Scalar lower, Scalar upper) {
-	Mat dst_img = Mat::zeros(src_img.size(), src_img.type()); //¿øº»ÀÌ¹ÌÁö¿Í °°Àº »çÀÌÁî, °°Àº Å¸ÀÔ Èæ¹é ÀÌ¹ÌÁö »ı¼º
+	Mat dst_img = Mat::zeros(src_img.size(), src_img.type()); //ì›ë³¸ì´ë¯¸ì§€ì™€ ê°™ì€ ì‚¬ì´ì¦ˆ, ê°™ì€ íƒ€ì… í‘ë°± ì´ë¯¸ì§€ ìƒì„±
 	for (int y = 0; y < src_img.rows; y++) {
-		for (int x = 0; x < src_img.cols; x++) { //¸ğµç pixel¿¡ ´ëÇØ
+		for (int x = 0; x < src_img.cols; x++) { //ëª¨ë“  pixelì— ëŒ€í•´
 			Scalar pixel = src_img.at<Vec3b>(y, x);
-			//ÇÈ¼¿ °ªÀÌ lower°ª°ú upper°ª »çÀÌÀÇ °ªÀÌ¶ó¸é
+			//í”½ì…€ ê°’ì´ lowerê°’ê³¼ upperê°’ ì‚¬ì´ì˜ ê°’ì´ë¼ë©´
 			if (pixel.val[0] > lower.val[0] && pixel.val[1] > lower.val[1] &&
 				pixel.val[2] > lower.val[2] && pixel.val[0] < upper.val[0] &&
 				pixel.val[1] < upper.val[1] && pixel.val[2] < upper.val[2]) {
-				dst_img.at<Vec3b>(y, x) = 255; //white·Î ¼³Á¤
+				dst_img.at<Vec3b>(y, x) = 255; //whiteë¡œ ì„¤ì •
 			}
 		}
 	}
@@ -236,7 +236,7 @@ Mat MyinRange(Mat src_img, Scalar lower, Scalar upper) {
 void Extraction(Mat src_img) {
 	Mat range_img;
 
-	//green, blue, orangeÀÇ ÇÏÇÑ°ª »óÇÑ°ª ¼³Á¤
+	//green, blue, orangeì˜ í•˜í•œê°’ ìƒí•œê°’ ì„¤ì •
 	Scalar greenl(40, 60, 0);
 	Scalar greenu(120, 255, 255);
 	Scalar bluel(120, 50, 10 );
@@ -247,22 +247,22 @@ void Extraction(Mat src_img) {
 	Mat hsv_img(src_img.size(), src_img.type()); 
 
 	int orange = 0; int green = 0; int  blue = 0;
-	hsv_img = MyBgr2Hsv(src_img); //hsv¿µ»ó ¸¸µé±â
+	hsv_img = MyBgr2Hsv(src_img); //hsvì˜ìƒ ë§Œë“¤ê¸°
 	imshow("fruitbgr", src_img);
 	imshow("fruithsv", hsv_img);
 
 	for (int y = 0; y < hsv_img.rows; y++) {
-		for (int x = 0; x < hsv_img.cols; x++) { //¸ğµç ÇÈ¼¿¿¡´ëÇØ
+		for (int x = 0; x < hsv_img.cols; x++) { //ëª¨ë“  í”½ì…€ì—ëŒ€í•´
 			if (hsv_img.at<Vec3b>(y, x)[0] >= 40 && hsv_img.at<Vec3b>(y, x)[0] <= 120)
-				green++; // h°ªÀÌ 40~120 »çÀÌ °ªÀÌ¶ó¸é green count
+				green++; // hê°’ì´ 40~120 ì‚¬ì´ ê°’ì´ë¼ë©´ green count
 			else if (hsv_img.at<Vec3b>(y, x)[0] >= 0 && hsv_img.at<Vec3b>(y, x)[0] <= 40)
-				orange++; //h°ªÀÌ 0~40 »çÀÌ °ªÀÌ¶ó¸é  orange count
+				orange++; //hê°’ì´ 0~40 ì‚¬ì´ ê°’ì´ë¼ë©´  orange count
 			else if (hsv_img.at<Vec3b>(y, x)[0] >= 110 && hsv_img.at<Vec3b>(y, x)[0] <= 190)
-				blue++; //h°ªÀÌ 110~190 »çÀÌ °ªÀÌ¶ó¸é blue count 
+				blue++; //hê°’ì´ 110~190 ì‚¬ì´ ê°’ì´ë¼ë©´ blue count 
 		}
 	}
 
- //count °ªÀÌ °¡Àå¸¹Àº color¿¡ µû¶ó inrange ÇÔ¼ö Àû¿ëÇÏ°í ¹®ÀÚ Ãâ·Â
+ //count ê°’ì´ ê°€ì¥ë§ì€ colorì— ë”°ë¼ inrange í•¨ìˆ˜ ì ìš©í•˜ê³  ë¬¸ì ì¶œë ¥
 	if (green >= orange && green >= blue) {
 		range_img = MyinRange(hsv_img, greenl, greenu);
 		cout << "green" << endl;
@@ -279,13 +279,13 @@ void Extraction(Mat src_img) {
  
 	for (int y = 0; y < hsv_img.rows; y++) {
 		for (int x = 0; x < hsv_img.cols; x++) {
-			if (range_img.at<Vec3b>(y, x) == Vec3b(0, 0, 0)) { //inrange Àû¿ëÇÑ ÀÌ¹ÌÁöÀÇ pixelÀÌ Scalar(0,0,0)ÀÌ¸é
-				src_img.at<Vec3b>(y, x) = Vec3b(0, 0, 0); //¿øº»ÀÌ¹ÌÁöµµ (0,0,0)À¸·Î ¼³Á¤
+			if (range_img.at<Vec3b>(y, x) == Vec3b(0, 0, 0)) { //inrange ì ìš©í•œ ì´ë¯¸ì§€ì˜ pixelì´ Scalar(0,0,0)ì´ë©´
+				src_img.at<Vec3b>(y, x) = Vec3b(0, 0, 0); //ì›ë³¸ì´ë¯¸ì§€ë„ (0,0,0)ìœ¼ë¡œ ì„¤ì •
 			}
 		}
 	}
 	
-	imshow("fruit", src_img); //Ãâ·Â
+	imshow("fruit", src_img); //ì¶œë ¥
 
 	waitKey(0);
 
