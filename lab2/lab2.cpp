@@ -120,7 +120,7 @@ void SpreadSalts( Mat& img, int b, int g , int r) {
 			img.at<Vec3b>(y3, x3) = Vec3b(0, 0, 255); //컬러를 red으로
 	}
 }
-
+ 
 Mat GetHistogram(Mat& src) {
 	Mat histogram;
 	const int* channel_numbers = { 0 };
