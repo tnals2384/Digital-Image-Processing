@@ -18,7 +18,7 @@ using namespace cv::xfeatures2d;
 void ex_panorama_simple() {
 	Mat img;
 	vector<Mat> imgs;
-	//left,center,right¸¦ ÀĞ¾î¿Í imgs vector¿¡ ÀúÀå
+	//left,center,rightë¥¼ ì½ì–´ì™€ imgs vectorì— ì €ì¥
 	img = imread("left.jpg", IMREAD_COLOR);
 	imgs.push_back(img);
 	img = imread("center.jpg", IMREAD_COLOR);
@@ -26,7 +26,7 @@ void ex_panorama_simple() {
 	img = imread("right.jpg", IMREAD_COLOR);
 	imgs.push_back(img);
 
-	//stitcher class¸¦ ÀÌ¿ëÇÏ¿© imgs stitch
+	//stitcher classë¥¼ ì´ìš©í•˜ì—¬ imgs stitch
 	Mat result;
 	Ptr<Stitcher> stitcher = Stitcher::create(Stitcher::PANORAMA, false);
 	Stitcher::Status status = stitcher->stitch(imgs, result);
@@ -59,18 +59,18 @@ int myKernelConv3x3(uchar* arr, int kernel[][3], int x, int y, int width, int he
 
 
 Mat makePanorama(Mat img_l, Mat img_r, int thresh_dist, int min_matches) {
-	//grayscale·Î º¯È¯
+	//grayscaleë¡œ ë³€í™˜
 	Mat img_gray_l, img_gray_r;
 	cvtColor(img_l, img_gray_l, CV_BGR2GRAY);
 	cvtColor(img_r, img_gray_r, CV_BGR2GRAY);
 
-	//SURF ¹æ½ÄÀ¸·Î Æ¯Â¡Á¡ ÃßÃâ
+	//SURF ë°©ì‹ìœ¼ë¡œ íŠ¹ì§•ì  ì¶”ì¶œ
 	Ptr<SurfFeatureDetector> Detector = SURF::create(300);
 	vector<KeyPoint> kpts_obj, kpts_scene;
-	Detector->detect(img_gray_l, kpts_obj);  //keypoints Å½Áö
+	Detector->detect(img_gray_l, kpts_obj);  //keypoints íƒì§€
 	Detector->detect(img_gray_r, kpts_scene);
 
-	//Æ¯Â¡Á¡ ½Ã°¢È­
+	//íŠ¹ì§•ì  ì‹œê°í™”
 	Mat img_kpts_l, img_kpts_r;
 	drawKeypoints(img_gray_l, kpts_obj, img_kpts_l,
 		Scalar::all(-1), DrawMatchesFlags::DEFAULT);
@@ -80,82 +80,82 @@ Mat makePanorama(Mat img_l, Mat img_r, int thresh_dist, int min_matches) {
 	imwrite("img_kpts_l.png", img_kpts_l);
 	imwrite("img_kpts_r.png", img_kpts_r);
 
-	//±â¼úÀÚ(descriptor) ÃßÃâ                             
+	//ê¸°ìˆ ì(descriptor) ì¶”ì¶œ                             
 	Ptr<SurfDescriptorExtractor> Extractor = SURF::create(100, 4, 3, false, true);
 	Mat img_des_obj, img_des_scene;
 	Extractor->compute(img_gray_l, kpts_obj, img_des_obj);
 	Extractor->compute(img_gray_r, kpts_scene, img_des_scene);
 
-	//ÃßÃâÇÑ descriptor¸¦ ÀÌ¿ëÇÏ¿© Æ¯Â¡Á¡ ¸ÅÄª
-	BFMatcher matcher(NORM_L2); //NORM_L2·Î °Å¸® ÃøÁ¤
+	//ì¶”ì¶œí•œ descriptorë¥¼ ì´ìš©í•˜ì—¬ íŠ¹ì§•ì  ë§¤ì¹­
+	BFMatcher matcher(NORM_L2); //NORM_L2ë¡œ ê±°ë¦¬ ì¸¡ì •
 	vector<DMatch> matches; 
-	matcher.match(img_des_obj, img_des_scene, matches); //Æ¯Â¡Á¡ ¸ÅÄª ½ÇÇà
+	matcher.match(img_des_obj, img_des_scene, matches); //íŠ¹ì§•ì  ë§¤ì¹­ ì‹¤í–‰
 
-	//¸ÅÄª °á°ú ½Ã°¢È­
+	//ë§¤ì¹­ ê²°ê³¼ ì‹œê°í™”
 	Mat img_matches;
 	drawMatches(img_gray_l, kpts_obj, img_gray_r, kpts_scene, matches, img_matches, Scalar::all(-1),
 		Scalar::all(-1), vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 	imwrite("img_matches.png", img_matches);
 
-	//¸ÅÄª °á°ú Á¤Á¦
-	//¸ÅÄª °Å¸®°¡ ÀÛÀº ¿ì¼öÇÑ ¸ÅÄª °á°ú¸¦ Á¤Á¦ÇÏ´Â °úÁ¤
-	//ÃÖ¼Ò ¸ÅÄª °Å¸®ÀÇ 3¹è ¶Ç´Â ¿ì¼öÇÑ ¸ÅÄª °á°ú 60ÀÌ»ó ±îÁö Á¤Á¦
-	double dist_max = matches[0].distance;  //distance´Â ±â¼úÀÚ °£ÀÇ °Å¸®
+	//ë§¤ì¹­ ê²°ê³¼ ì •ì œ
+	//ë§¤ì¹­ ê±°ë¦¬ê°€ ì‘ì€ ìš°ìˆ˜í•œ ë§¤ì¹­ ê²°ê³¼ë¥¼ ì •ì œí•˜ëŠ” ê³¼ì •
+	//ìµœì†Œ ë§¤ì¹­ ê±°ë¦¬ì˜ 3ë°° ë˜ëŠ” ìš°ìˆ˜í•œ ë§¤ì¹­ ê²°ê³¼ 60ì´ìƒ ê¹Œì§€ ì •ì œ
+	double dist_max = matches[0].distance;  //distanceëŠ” ê¸°ìˆ ì ê°„ì˜ ê±°ë¦¬
 	double dist_min = matches[0].distance; 
 	double dist;
 	for (int i = 0; i < img_des_obj.rows; i++) {
-		dist = matches[i].distance; //distance´Â ±â¼úÀÚ °£ÀÇ °Å¸®
-		if (dist < dist_min) dist_min = dist; // ¸ÅÄª °Å¸®°¡ ÀÛÀº ¿ì¼öÇÑ °á°ú Ã£±â
+		dist = matches[i].distance; //distanceëŠ” ê¸°ìˆ ì ê°„ì˜ ê±°ë¦¬
+		if (dist < dist_min) dist_min = dist; // ë§¤ì¹­ ê±°ë¦¬ê°€ ì‘ì€ ìš°ìˆ˜í•œ ê²°ê³¼ ì°¾ê¸°
 		if (dist > dist_max) dist_max = dist;
 	}
-	printf("max_dist : %f\n", dist_max); //max´Â »ç½Ç»ó ºÒÇÊ¿ä
+	printf("max_dist : %f\n", dist_max); //maxëŠ” ì‚¬ì‹¤ìƒ ë¶ˆí•„ìš”
 	printf("min_dist : %f \n", dist_min); 
 
-	//¿ì¼öÇÑ ¸ÅÄª°á°ú Ã£±â
+	//ìš°ìˆ˜í•œ ë§¤ì¹­ê²°ê³¼ ì°¾ê¸°
 	vector<DMatch> matches_good;
 	do {
 		vector<DMatch> good_matches2;
 		for (int i = 0; i < img_des_obj.rows; i++) {
-			if (matches[i].distance < thresh_dist * dist_min) //ÃÖ¼Ò¸ÅÄª°á°úÀÇ 3¹èº¸´Ù ÀÛÀ¸¸é
-				good_matches2.push_back(matches[i]); // ¿ì¼öÇÑ ¸ÅÄª°á°ú
+			if (matches[i].distance < thresh_dist * dist_min) //ìµœì†Œë§¤ì¹­ê²°ê³¼ì˜ 3ë°°ë³´ë‹¤ ì‘ìœ¼ë©´
+				good_matches2.push_back(matches[i]); // ìš°ìˆ˜í•œ ë§¤ì¹­ê²°ê³¼
 		}
 		matches_good = good_matches2; 
 		thresh_dist -= 1;
-	} while (thresh_dist != 2 && matches_good.size() > min_matches); //¿ì¼öÇÑ ¸ÅÄª °á°ú 60ÀÌ»ó±îÁö
+	} while (thresh_dist != 2 && matches_good.size() > min_matches); //ìš°ìˆ˜í•œ ë§¤ì¹­ ê²°ê³¼ 60ì´ìƒê¹Œì§€
 
-	//¿ì¼öÇÑ ¸ÅÄª°á°ú ½Ã°¢È­
+	//ìš°ìˆ˜í•œ ë§¤ì¹­ê²°ê³¼ ì‹œê°í™”
 	Mat img_matches_good;
 	drawMatches(img_gray_l, kpts_obj, img_gray_r, kpts_scene, matches_good, img_matches_good,
 		Scalar::all(-1),Scalar::all(-1), vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 	imwrite("img_matches_good.png", img_matches_good);
 
-	//¸ÅÄª °á°ú ÁÂÇ¥ ÃßÃâ
+	//ë§¤ì¹­ ê²°ê³¼ ì¢Œí‘œ ì¶”ì¶œ
 	vector<Point2f> obj, scene;
 	for (int i = 0; i < matches_good.size(); i++) {
-		obj.push_back(kpts_obj[matches_good[i].queryIdx].pt); //obj ±â¼úÀÚ¸®½ºÆ®¿¡ ÀúÀåµÈ ÀÎµ¦½ºÀÇ ÁÂÇ¥
-		scene.push_back(kpts_scene[matches_good[i].trainIdx].pt); //scene ±â¼úÀÚ¸®½ºÆ®¿¡ ÀúÀåµÈ ÀÎµ¦½ºÀÇ ÁÂÇ¥
+		obj.push_back(kpts_obj[matches_good[i].queryIdx].pt); //obj ê¸°ìˆ ìë¦¬ìŠ¤íŠ¸ì— ì €ì¥ëœ ì¸ë±ìŠ¤ì˜ ì¢Œí‘œ
+		scene.push_back(kpts_scene[matches_good[i].trainIdx].pt); //scene ê¸°ìˆ ìë¦¬ìŠ¤íŠ¸ì— ì €ì¥ëœ ì¸ë±ìŠ¤ì˜ ì¢Œí‘œ
 	}
 
-	//¸ÅÄª °á°ú·ÎºÎÅÍ homography Çà·Ä ÃßÃâ
+	//ë§¤ì¹­ ê²°ê³¼ë¡œë¶€í„° homography í–‰ë ¬ ì¶”ì¶œ
 	Mat mat_homo = findHomography(scene, obj, RANSAC);
-	//ÀÌ»óÄ¡ Á¦°Å¸¦ À§ÇØ RANSACÃß°¡
-	//RANdom SAmple Consensus: ¸ğµ¨ÀÇ ÀÌ»óÄ¡µéÀ» Á¦°ÅÇØ ÀûÀıÇÑ Á¡µé¸¸ ³²±â°í ¸ğµ¨ ÃßÁ¤
+	//ì´ìƒì¹˜ ì œê±°ë¥¼ ìœ„í•´ RANSACì¶”ê°€
+	//RANdom SAmple Consensus: ëª¨ë¸ì˜ ì´ìƒì¹˜ë“¤ì„ ì œê±°í•´ ì ì ˆí•œ ì ë“¤ë§Œ ë‚¨ê¸°ê³  ëª¨ë¸ ì¶”ì •
 
-	//homograpy Çà·ÄÀ» ÀÌ¿ëÇØ ½ÃÁ¡ ¿ªº¯È¯
+	//homograpy í–‰ë ¬ì„ ì´ìš©í•´ ì‹œì  ì—­ë³€í™˜
 	Mat img_result;
 	warpPerspective(img_r, img_result, mat_homo, Size(img_l.cols * 2, img_l.rows * 1.2), INTER_CUBIC);
-	//¿µ»ó Àß¸²À» ¹æÁöÇÑ ¿©À¯ size ºÎ¿©
+	//ì˜ìƒ ì˜ë¦¼ì„ ë°©ì§€í•œ ì—¬ìœ  size ë¶€ì—¬
 
-	//±âÁ¸ ¿µ»ó°ú ¿ªº¯È¯µÈ ½ÃÁ¡ ¿µ»ó ÇÕÃ¼
+	//ê¸°ì¡´ ì˜ìƒê³¼ ì—­ë³€í™˜ëœ ì‹œì  ì˜ìƒ í•©ì²´
 	Mat img_pano;
 	img_pano = img_result.clone();
-	Mat roi(img_pano, Rect(0, 0, img_l.cols, img_l.rows)); //roi : °ü½É¿µ¿ª
-	img_l.copyTo(roi); //ÇÕÃ¼
+	Mat roi(img_pano, Rect(0, 0, img_l.cols, img_l.rows)); //roi : ê´€ì‹¬ì˜ì—­
+	img_l.copyTo(roi); //í•©ì²´
 
 	Mat roi2(img_pano, Rect(img_l.cols - 10, 0, 20, img_l.rows));
 	GaussianBlur(roi2, roi2, Size(5, 5), 0);
 
-	//°ËÀº ¿©¹é Àß¶ó³»±â
+	//ê²€ì€ ì—¬ë°± ì˜ë¼ë‚´ê¸°
 	int cut_x = 0, cut_y = 0;
 	for (int y = 0; y < img_pano.rows; y++) {
 		for (int x = 0; x < img_pano.cols; x++) {
@@ -173,7 +173,7 @@ Mat makePanorama(Mat img_l, Mat img_r, int thresh_dist, int min_matches) {
 	img_pano_cut = img_pano(Range(0, cut_y), Range(0, cut_x));
 	imwrite("img_pano_cut.png", img_pano_cut);
 
-	return img_pano_cut; //ÃÖÁ¾ ÆÄ³ë¶ó¸¶ ÀÌ¹ÌÁö return
+	return img_pano_cut; //ìµœì¢… íŒŒë…¸ë¼ë§ˆ ì´ë¯¸ì§€ return
 }
 
 void ex_panorama() {
@@ -197,87 +197,87 @@ void ex_panorama() {
 }
 
 
-void ex2(Mat book) { //scene¿¡¼­ Ã£¾Æ³¾ Ã¥À» ÀÎÀÚ·Î ¹ŞÀ½
+void ex2(Mat book) { //sceneì—ì„œ ì°¾ì•„ë‚¼ ì±…ì„ ì¸ìë¡œ ë°›ìŒ
 	Mat scene = imread("scene.jpg", 1);
 
 	Mat sgray, bgray;
-	//grayscale º¯È¯
+	//grayscale ë³€í™˜
 	cvtColor(scene, sgray, CV_BGR2GRAY);
 	cvtColor(book, bgray, CV_BGR2GRAY);
 
-	//SIFT¸¦ ÀÌ¿ëÇÏ¿© Æ¯Â¡Á¡ °¨Áö
+	//SIFTë¥¼ ì´ìš©í•˜ì—¬ íŠ¹ì§•ì  ê°ì§€
 	Ptr<SiftFeatureDetector>detector = SiftFeatureDetector::create(); 
 	std::vector<KeyPoint> kpts_s,kpts_b;
-	detector->detect(sgray, kpts_s); // scene¿¡¼­ keypoints°¨Áö
-	detector->detect(bgray, kpts_b); //book¿¡¼­ keypoints°¨Áö
+	detector->detect(sgray, kpts_s); // sceneì—ì„œ keypointsê°ì§€
+	detector->detect(bgray, kpts_b); //bookì—ì„œ keypointsê°ì§€
 
 
-	//SIFT¸¦ ÀÌ¿ëÇÑ ±â¼úÀÚ ÃßÃâ
+	//SIFTë¥¼ ì´ìš©í•œ ê¸°ìˆ ì ì¶”ì¶œ
 	Ptr<SiftDescriptorExtractor> Extractor = SIFT::create(100, 4, 3, false, true);
 	Mat img_des_book, img_des_scene; 
 	Extractor->compute(bgray, kpts_b, img_des_book); 
 	Extractor->compute(sgray, kpts_s, img_des_scene);
 	
-	//±â¼úÀÚ¸¦ ÀÌ¿ëÇÑ Æ¯Â¡Á¡ ¸ÅÄª
-	BFMatcher matcher(NORM_L2); //°Å¸®ÃøÁ¤Àº NORM_L2 ¹æ½Ä »ç¿ë
+	//ê¸°ìˆ ìë¥¼ ì´ìš©í•œ íŠ¹ì§•ì  ë§¤ì¹­
+	BFMatcher matcher(NORM_L2); //ê±°ë¦¬ì¸¡ì •ì€ NORM_L2 ë°©ì‹ ì‚¬ìš©
 	vector<DMatch> matches;
 	matcher.match(img_des_book, img_des_scene, matches);
 
-	//img_mathces¿¡ ¸ÅÄª °á°ú ½Ã°¢È­
+	//img_mathcesì— ë§¤ì¹­ ê²°ê³¼ ì‹œê°í™”
 	Mat img_matches;
 	drawMatches( bgray, kpts_b, sgray, kpts_s, matches, img_matches, Scalar::all(-1),
 		Scalar::all(-1), vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 	
-//¸ÅÄª °á°ú Á¤Á¦
-//¸ÅÄª °Å¸®°¡ ÀÛÀº ¿ì¼öÇÑ ¸ÅÄª °á°ú¸¦ Á¤Á¦ÇÏ´Â °úÁ¤
-//ÃÖ¼Ò ¸ÅÄª °Å¸®ÀÇ 3¹è ¶Ç´Â ¿ì¼öÇÑ ¸ÅÄª °á°ú 60ÀÌ»ó ±îÁö Á¤Á¦
+//ë§¤ì¹­ ê²°ê³¼ ì •ì œ
+//ë§¤ì¹­ ê±°ë¦¬ê°€ ì‘ì€ ìš°ìˆ˜í•œ ë§¤ì¹­ ê²°ê³¼ë¥¼ ì •ì œí•˜ëŠ” ê³¼ì •
+//ìµœì†Œ ë§¤ì¹­ ê±°ë¦¬ì˜ 3ë°° ë˜ëŠ” ìš°ìˆ˜í•œ ë§¤ì¹­ ê²°ê³¼ 60ì´ìƒ ê¹Œì§€ ì •ì œ
 	int thresh_dist = 3;
 	int min_matches = 60;
 
-	double dist_max = matches[0].distance; //distance´Â ±â¼úÀÚ °£ÀÇ °Å¸®
+	double dist_max = matches[0].distance; //distanceëŠ” ê¸°ìˆ ì ê°„ì˜ ê±°ë¦¬
 	double dist_min = matches[0].distance;
 	double dist;
 
 
-	//°¡Àå ÀÛÀº ¸ÅÄª °Å¸® Ã£±â
+	//ê°€ì¥ ì‘ì€ ë§¤ì¹­ ê±°ë¦¬ ì°¾ê¸°
 	for (int i = 0; i < img_des_book.rows; i++) { 
 		dist = matches[i].distance;
 		if (dist < dist_min) dist_min = dist;
-		if (dist > dist_max) dist_max = dist;  //max´Â »ç½Ç»ó ºÒÇÊ¿ä
+		if (dist > dist_max) dist_max = dist;  //maxëŠ” ì‚¬ì‹¤ìƒ ë¶ˆí•„ìš”
 	}
 	printf("max_dist : %f\n", dist_max);
 	printf("min_dist : %f \n", dist_min);
 
-	//¿ì¼öÇÑ ¸ÅÄª °á°ú Ã£±â
+	//ìš°ìˆ˜í•œ ë§¤ì¹­ ê²°ê³¼ ì°¾ê¸°
 	vector<DMatch> matches_good; 
 	do {
 		vector<DMatch> good_matches2;
 		for (int i = 0; i < img_des_book.rows; i++) {
-			if (matches[i].distance < thresh_dist * dist_min)  //ÃÖ¼Ò¸ÅÄª°á°úÀÇ 3¹èº¸´Ù ÀÛÀ¸¸é
-				good_matches2.push_back(matches[i]); //¿ì¼ö ¸ÅÄª °á°ú
+			if (matches[i].distance < thresh_dist * dist_min)  //ìµœì†Œë§¤ì¹­ê²°ê³¼ì˜ 3ë°°ë³´ë‹¤ ì‘ìœ¼ë©´
+				good_matches2.push_back(matches[i]); //ìš°ìˆ˜ ë§¤ì¹­ ê²°ê³¼
 		}
 		matches_good = good_matches2;
 		thresh_dist -= 1;
-	} while (thresh_dist != 2 && matches_good.size() > min_matches);  //¿ì¼ö ¸ÅÄª °á°ú 60ÀÌ»óÀÌ µÉ¶§±îÁö
+	} while (thresh_dist != 2 && matches_good.size() > min_matches);  //ìš°ìˆ˜ ë§¤ì¹­ ê²°ê³¼ 60ì´ìƒì´ ë ë•Œê¹Œì§€
 
-	//¿ì¼öÇÑ ¸ÅÄª°á°ú ½Ã°¢È­
+	//ìš°ìˆ˜í•œ ë§¤ì¹­ê²°ê³¼ ì‹œê°í™”
 	Mat img_matches_good;
 	drawMatches(bgray, kpts_b, sgray, kpts_s, matches_good, img_matches_good,
 		Scalar::all(-1), Scalar::all(-1), vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 
 
-	//¸ÅÄª °á°ú ÁÂÇ¥ ÃßÃâ
+	//ë§¤ì¹­ ê²°ê³¼ ì¢Œí‘œ ì¶”ì¶œ
 	vector<Point2f> b, s;
 	for (int i = 0; i < matches_good.size(); i++) {
-		b.push_back(kpts_b[matches_good[i].queryIdx].pt); //book ±â¼úÀÚ¸®½ºÆ®¿¡ ÀúÀåµÈ ÀÎµ¦½ºÀÇ ÁÂÇ¥
-		s.push_back(kpts_s[matches_good[i].trainIdx].pt); //scene ±â¼úÀÚ¸®½ºÆ®¿¡ ÀúÀåµÈ ÀÎµ¦½º ÁÂÇ¥
+		b.push_back(kpts_b[matches_good[i].queryIdx].pt); //book ê¸°ìˆ ìë¦¬ìŠ¤íŠ¸ì— ì €ì¥ëœ ì¸ë±ìŠ¤ì˜ ì¢Œí‘œ
+		s.push_back(kpts_s[matches_good[i].trainIdx].pt); //scene ê¸°ìˆ ìë¦¬ìŠ¤íŠ¸ì— ì €ì¥ëœ ì¸ë±ìŠ¤ ì¢Œí‘œ
 	}
 
-	//¸ÅÄª °á°ú·ÎºÎÅÍ homography Çà·Ä ÃßÃâ
+	//ë§¤ì¹­ ê²°ê³¼ë¡œë¶€í„° homography í–‰ë ¬ ì¶”ì¶œ
 	Mat mat_homo = findHomography(b, s, RANSAC);
-	//ÀÌ»óÄ¡ Á¦°Å¸¦ À§ÇØ RANSACÃß°¡
+	//ì´ìƒì¹˜ ì œê±°ë¥¼ ìœ„í•´ RANSACì¶”ê°€
 
-	//bgray ÀÌ¹ÌÁö ²ÀÁşÁ¡À» corner1¿¡ ³Ö°í È£¸ğ±×·¡ÇÇ Çà·Ä¿¡ µû¶ó Åõ½Ãº¯È¯
+	//bgray ì´ë¯¸ì§€ ê¼­ì§“ì ì„ corner1ì— ë„£ê³  í˜¸ëª¨ê·¸ë˜í”¼ í–‰ë ¬ì— ë”°ë¼ íˆ¬ì‹œë³€í™˜
 	vector<Point2f> corners1, corners2;
 	corners1.push_back(Point2f(0, 0));
 	corners1.push_back(Point2f(bgray.cols - 1, 0));
@@ -285,15 +285,15 @@ void ex2(Mat book) { //scene¿¡¼­ Ã£¾Æ³¾ Ã¥À» ÀÎÀÚ·Î ¹ŞÀ½
 	corners1.push_back(Point2f(0, bgray.rows - 1));
 	perspectiveTransform(corners1, corners2, mat_homo);
 
-	//È£¸ğ±×·¡ÇÇ·Î º¯È¯µÈ ÄÚ³Ê¸¦ corners_dst¿¡ ³Ö±â
+	//í˜¸ëª¨ê·¸ë˜í”¼ë¡œ ë³€í™˜ëœ ì½”ë„ˆë¥¼ corners_dstì— ë„£ê¸°
 	vector<Point> corners_dst;
 	for (Point2f pt : corners2) 
 		corners_dst.push_back(Point(cvRound(pt.x + bgray.cols), cvRound(pt.y)));
 
-	//corners_dst·ÎºÎÅÍ »ç°¢ÇüÀ» ±×¸²
+	//corners_dstë¡œë¶€í„° ì‚¬ê°í˜•ì„ ê·¸ë¦¼
 	polylines(img_matches_good, corners_dst, true, Scalar(255,255,0), 2, LINE_AA);
 
-	//°á°ú Ãâ·Â ¹× ÀúÀå
+	//ê²°ê³¼ ì¶œë ¥ ë° ì €ì¥
 	imshow("img_matches_good.png", img_matches_good);
 	imwrite("img_matches_good.png", img_matches_good);
 
