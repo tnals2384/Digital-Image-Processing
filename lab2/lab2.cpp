@@ -1,7 +1,7 @@
 #include <iostream>
-#include "opencv2/core/core.hpp" // Mat class¿Í °¢Á¾ data structure ¹× »ê¼ú ·çÆ¾À» Æ÷ÇÔÇÏ´Â Çì´õ
-#include "opencv2/highgui/highgui.hpp" // GUI¿Í °ü·ÃµÈ ¿ä¼Ò¸¦ Æ÷ÇÔÇÏ´Â Çì´õ(imshow µî)
-#include "opencv2/imgproc/imgproc.hpp" // °¢Á¾ ÀÌ¹ÌÁö Ã³¸® ÇÔ¼ö¸¦ Æ÷ÇÔÇÏ´Â Çì´õ
+#include "opencv2/core/core.hpp" // Mat classì™€ ê°ì¢… data structure ë° ì‚°ìˆ  ë£¨í‹´ì„ í¬í•¨í•˜ëŠ” í—¤ë”
+#include "opencv2/highgui/highgui.hpp" // GUIì™€ ê´€ë ¨ëœ ìš”ì†Œë¥¼ í¬í•¨í•˜ëŠ” í—¤ë”(imshow ë“±)
+#include "opencv2/imgproc/imgproc.hpp" // ê°ì¢… ì´ë¯¸ì§€ ì²˜ë¦¬ í•¨ìˆ˜ë¥¼ í¬í•¨í•˜ëŠ” í—¤ë”
 using namespace cv;
 using namespace std;
 void SpreadSalts(Mat& , int ,int,int);
@@ -11,38 +11,38 @@ void darkdown(Mat&);
 Mat GetHistogram(Mat&);
 
 int main() {
-	//Mat src_img = imread("img1.jpg", 1); // ÀÌ¹ÌÁö ÄÃ·¯·Î ÀĞ±â
-	//Mat src_img = imread("img2.jpg", 0); // ÀÌ¹ÌÁö Èæ¹é¿µ»óÀ¸·Î ÀĞ±â
-	//SpreadSalts(src_img, 70,30,50); //Á¡ Èğ»Ñ¸®±â
+	//Mat src_img = imread("img1.jpg", 1); // ì´ë¯¸ì§€ ì»¬ëŸ¬ë¡œ ì½ê¸°
+	//Mat src_img = imread("img2.jpg", 0); // ì´ë¯¸ì§€ í‘ë°±ì˜ìƒìœ¼ë¡œ ì½ê¸°
+	//SpreadSalts(src_img, 70,30,50); //ì  í©ë¿Œë¦¬ê¸°
 	//SaltsCount(src_img);
 	//darkup(src_img);
 	//darkdown(src_img);
-	//imshow("Test window", src_img); // ÀÌ¹ÌÁö Ãâ·Â
+	//imshow("Test window", src_img); // ì´ë¯¸ì§€ ì¶œë ¥
 	//imshow("histogram", GetHistogram(src_img));
 
 	//-------------------------------------------------------------------------
-	//ÁÖ¾îÁø ¿µ»ó(img3.jpg, img4.jpg, img5.jpg)À» ÀÌ¿ëÇØ ´ÙÀ½ÀÇ ¿µ»óÀ» ¿Ï¼ºÇÒ °Í
+	//ì£¼ì–´ì§„ ì˜ìƒ(img3.jpg, img4.jpg, img5.jpg)ì„ ì´ìš©í•´ ë‹¤ìŒì˜ ì˜ìƒì„ ì™„ì„±í•  ê²ƒ
 	Mat imgA = imread("img3.jpg", 1);
 	Mat imgB = imread("img4.jpg", 1);
-	resize(imgB, imgB, Size(imgA.cols, imgA.rows)); //imgBÀÇ Å©±â¸¦ imagAÀÇ Å©±â¿Í °°µµ·Ï ¼³Á¤
+	resize(imgB, imgB, Size(imgA.cols, imgA.rows)); //imgBì˜ í¬ê¸°ë¥¼ imagAì˜ í¬ê¸°ì™€ ê°™ë„ë¡ ì„¤ì •
 	Mat dist1;
-	subtract(imgA, imgB, dist1); //»©±â ¿¬»êÀ» ÇØ¼­ dist1¿¡ ÀúÀå
+	subtract(imgA, imgB, dist1); //ë¹¼ê¸° ì—°ì‚°ì„ í•´ì„œ dist1ì— ì €ì¥
 	imshow("A+B",dist1);
 
-	Mat srcrgb = imread("img5.jpg", 1); //ÄÃ·¯¿µ»ó ÀĞ¾î¿À±â
+	Mat srcrgb = imread("img5.jpg", 1); //ì»¬ëŸ¬ì˜ìƒ ì½ì–´ì˜¤ê¸°
 	Mat gray_img, mask;
-	cvtColor(srcrgb, gray_img, CV_BGR2GRAY); //Èæ¹éÀ¸·Î ¸¸µé¾î gray_img¿¡ ÀúÀå
-	Mat imageROI(dist1, Rect(gray_img.cols/2, 330, gray_img.cols, gray_img.rows)); //°ü½É¿µ¿ª ¼³Á¤
+	cvtColor(srcrgb, gray_img, CV_BGR2GRAY); //í‘ë°±ìœ¼ë¡œ ë§Œë“¤ì–´ gray_imgì— ì €ì¥
+	Mat imageROI(dist1, Rect(gray_img.cols/2, 330, gray_img.cols, gray_img.rows)); //ê´€ì‹¬ì˜ì—­ ì„¤ì •
 	threshold(gray_img, mask, 178, 255, THRESH_BINARY); 
 	
-    mask=120 - mask; // ±×·¹ÀÌ½ºÄÉÀÏ¿¡¼­ CV_8U(ºÎÈ£°¡¾ø´Â 8ºñÆ®)ÀÌ±â ¶§¹®¿¡ 127À» ³Ñ´Â ÇÈ¼¿µéÀº ¸ğµÎ 0ÀÌµÊ
+    mask=120 - mask; // ê·¸ë ˆì´ìŠ¤ì¼€ì¼ì—ì„œ CV_8U(ë¶€í˜¸ê°€ì—†ëŠ” 8ë¹„íŠ¸)ì´ê¸° ë•Œë¬¸ì— 127ì„ ë„˜ëŠ” í”½ì…€ë“¤ì€ ëª¨ë‘ 0ì´ë¨
 	
-	srcrgb.copyTo(imageROI, mask); //srcrgb¿µ»óÀ» °ü½É¿µ¿ª¿¡ mask¸¦ Àû¿ëÇÏ¿© º¹»ç
+	srcrgb.copyTo(imageROI, mask); //srcrgbì˜ìƒì„ ê´€ì‹¬ì˜ì—­ì— maskë¥¼ ì ìš©í•˜ì—¬ ë³µì‚¬
 	imshow("Spacex", dist1);
 
-	waitKey(0); // Å° ÀÔ·Â ´ë±â(0: Å°°¡ ÀÔ·ÂµÉ ¶§ ±îÁö ÇÁ·Î±×·¥ ¸ØÃã)
-	destroyWindow("Test window"); // ÀÌ¹ÌÁö Ãâ·ÂÃ¢ Á¾·á
-	destroyWindow("Spacex"); // ÀÌ¹ÌÁö Ãâ·ÂÃ¢ Á¾·á
+	waitKey(0); // í‚¤ ì…ë ¥ ëŒ€ê¸°(0: í‚¤ê°€ ì…ë ¥ë  ë•Œ ê¹Œì§€ í”„ë¡œê·¸ë¨ ë©ˆì¶¤)
+	destroyWindow("Test window"); // ì´ë¯¸ì§€ ì¶œë ¥ì°½ ì¢…ë£Œ
+	destroyWindow("Spacex"); // ì´ë¯¸ì§€ ì¶œë ¥ì°½ ì¢…ë£Œ
 	return 0;
 }
 
@@ -51,11 +51,11 @@ int main() {
 
 
 
-void darkdown(Mat& img) { //¹ØÀ¸·Î °¥¼ö·Ï ¾îµÎ¿öÁü
+void darkdown(Mat& img) { //ë°‘ìœ¼ë¡œ ê°ˆìˆ˜ë¡ ì–´ë‘ì›Œì§
 	
 	for (int x = 0; x < img.rows; x++) {
 		for (int y = 0; y < img.cols; y++) {
-			float g = float(x + 1) / float(img.rows); // x°¡ 0ÀÌ¸é ³ª´­ ¼ö ¾ø±â¶§¹®¿¡ x+1·Î ³ª´©¾îÁÜ
+			float g = float(x + 1) / float(img.rows); // xê°€ 0ì´ë©´ ë‚˜ëˆŒ ìˆ˜ ì—†ê¸°ë•Œë¬¸ì— x+1ë¡œ ë‚˜ëˆ„ì–´ì¤Œ
 			if (img.at<uchar>(x, y) - g*255 > 0) 
 				 img.at<uchar>(x, y) -= g*255; 
 			else
@@ -65,11 +65,11 @@ void darkdown(Mat& img) { //¹ØÀ¸·Î °¥¼ö·Ï ¾îµÎ¿öÁü
 	
 }
 
-void darkup(Mat& img) { //À§·Î °¥¼ö·Ï ¾îµÎ¿öÁü
+void darkup(Mat& img) { //ìœ„ë¡œ ê°ˆìˆ˜ë¡ ì–´ë‘ì›Œì§
 
 	for (int x = 0; x < img.rows; x++) {
 		for (int y = 0; y < img.cols; y++) {
-			float g = float(x + 1) / float(img.rows); // x°¡ 0ÀÌ¸é ³ª´­ ¼ö ¾ø±â¶§¹®¿¡ x+1·Î ³ª´©¾îÁÜ
+			float g = float(x + 1) / float(img.rows); // xê°€ 0ì´ë©´ ë‚˜ëˆŒ ìˆ˜ ì—†ê¸°ë•Œë¬¸ì— x+1ë¡œ ë‚˜ëˆ„ì–´ì¤Œ
 			if (img.at<uchar>(x, y) - (255 - g * 255) > 0)
 				img.at<uchar>(x, y) -= (255- g * 255);
 			else
@@ -102,22 +102,22 @@ void SpreadSalts( Mat& img, int b, int g , int r) {
 		
 			int x1 = rand() % img.cols;  
 			int y1 = rand() % img.rows;
-			/* ³ª¸ÓÁö´Â ³ª´©´Â ¼ö¸¦ ³ÑÀ» ¼ö ¾øÀ¸¹Ç·Î À§Ä¡¸¦ Á¦ÇÑ½ÃÅ°±âÀ§ÇÑ moduler¿¬»ê*/
-			if (img.channels() == 3)  //ÀÌ¹ÌÁö°¡ ÄÃ·¯ÀÏ ¶§
-				img.at<Vec3b>(y1, x1) = Vec3b(255, 0, 0); //ÄÃ·¯¸¦ blue·Î
+			/* ë‚˜ë¨¸ì§€ëŠ” ë‚˜ëˆ„ëŠ” ìˆ˜ë¥¼ ë„˜ì„ ìˆ˜ ì—†ìœ¼ë¯€ë¡œ ìœ„ì¹˜ë¥¼ ì œí•œì‹œí‚¤ê¸°ìœ„í•œ modulerì—°ì‚°*/
+			if (img.channels() == 3)  //ì´ë¯¸ì§€ê°€ ì»¬ëŸ¬ì¼ ë•Œ
+				img.at<Vec3b>(y1, x1) = Vec3b(255, 0, 0); //ì»¬ëŸ¬ë¥¼ blueë¡œ
 	}
 	for (int n = 0; n < g; n++) {
 		int x2 = rand() % img.cols;
 		int y2 = rand() % img.rows;
 		
 		if (img.channels() == 3) 
-			img.at<Vec3b>(y2, x2) = Vec3b(0, 255, 0); //ÄÃ·¯¸¦ greenÀ¸·Î
+			img.at<Vec3b>(y2, x2) = Vec3b(0, 255, 0); //ì»¬ëŸ¬ë¥¼ greenìœ¼ë¡œ
 	}
 	for (int n = 0; n < r; n++) {
 		int x3 = rand() % img.cols;
 		int y3 = rand() % img.rows;
 		if (img.channels() == 3)
-			img.at<Vec3b>(y3, x3) = Vec3b(0, 0, 255); //ÄÃ·¯¸¦ redÀ¸·Î
+			img.at<Vec3b>(y3, x3) = Vec3b(0, 0, 255); //ì»¬ëŸ¬ë¥¼ redìœ¼ë¡œ
 	}
 }
 
