@@ -1,8 +1,8 @@
 #include <iostream>
 #include <iomanip>
-#include "opencv2/core/core.hpp" // Mat class¿Í °¢Á¾ data structure ¹× »ê¼ú ·çÆ¾À» Æ÷ÇÔÇÏ´Â Çì´õ
-#include "opencv2/highgui/highgui.hpp" // GUI¿Í °ü·ÃµÈ ¿ä¼Ò¸¦ Æ÷ÇÔÇÏ´Â Çì´õ(imshow µî)
-#include "opencv2/imgproc/imgproc.hpp" // °¢Á¾ ÀÌ¹ÌÁö Ã³¸® ÇÔ¼ö¸¦ Æ÷ÇÔÇÏ´Â Çì´õ
+#include "opencv2/core/core.hpp" // Mat classì™€ ê°ì¢… data structure ë° ì‚°ìˆ  ë£¨í‹´ì„ í¬í•¨í•˜ëŠ” í—¤ë”
+#include "opencv2/highgui/highgui.hpp" // GUIì™€ ê´€ë ¨ëœ ìš”ì†Œë¥¼ í¬í•¨í•˜ëŠ” í—¤ë”(imshow ë“±)
+#include "opencv2/imgproc/imgproc.hpp" // ê°ì¢… ì´ë¯¸ì§€ ì²˜ë¦¬ í•¨ìˆ˜ë¥¼ í¬í•¨í•˜ëŠ” í—¤ë”
 using namespace cv;
 using namespace std;
 
@@ -90,15 +90,15 @@ Mat SDSobelFilter(Mat srcImg) {
 
 Mat getPhase(Mat complexImg) {
 	Mat planes[2];
-	split(complexImg, planes); //½Ç¼öºÎ Çã¼öºÎ ºĞ¸®
+	split(complexImg, planes); //ì‹¤ìˆ˜ë¶€ í—ˆìˆ˜ë¶€ ë¶„ë¦¬
 
 	Mat phaImg;
-	phase(planes[0], planes[1], phaImg); //phase Ãëµæ
+	phase(planes[0], planes[1], phaImg); //phase ì·¨ë“
 
 	return phaImg;
 }
 
-Mat centralize(Mat complex) { //ÁÂÇ¥°èÁß¾ÓÀÌµ¿
+Mat centralize(Mat complex) { //ì¢Œí‘œê³„ì¤‘ì•™ì´ë™
 	Mat planes[2];
 	split(complex, planes);
 	int cx = planes[0].cols / 2;
@@ -222,17 +222,17 @@ Mat doBPF(Mat src_img) {
 	double minVal, maxVal;
 	Point minLoc, maxLoc;
 	minMaxLoc(mag_img, &minVal, &maxVal, &minLoc, &maxLoc); 
-	normalize(mag_img, mag_img, 0, 1, NORM_MINMAX); // ÀÌ¹ÌÁö Á¤±ÔÈ­
+	normalize(mag_img, mag_img, 0, 1, NORM_MINMAX); // ì´ë¯¸ì§€ ì •ê·œí™”
 
-	Mat mask_img = Mat::zeros(mag_img.size(), CV_32F); //mask¸¦  ÀüºÎ 0À¸·Î ÃÊ±âÈ­
-	circle(mask_img, Point(mask_img.cols / 2, mask_img.rows / 2), 80, Scalar::all(1), -1, -1, 0); // ¹İÁö¸§ 80ÀÎ Scalar ¸ğµÎ 1ÀÎ ¿ø
-	circle(mask_img, Point(mask_img.cols / 2, mask_img.rows / 2), 20, Scalar::all(0), -1, -1, 0); //¹İÁö¸§ 20ÀÎ °ËÁ¤ ¿ø
+	Mat mask_img = Mat::zeros(mag_img.size(), CV_32F); //maskë¥¼  ì „ë¶€ 0ìœ¼ë¡œ ì´ˆê¸°í™”
+	circle(mask_img, Point(mask_img.cols / 2, mask_img.rows / 2), 80, Scalar::all(1), -1, -1, 0); // ë°˜ì§€ë¦„ 80ì¸ Scalar ëª¨ë‘ 1ì¸ ì›
+	circle(mask_img, Point(mask_img.cols / 2, mask_img.rows / 2), 20, Scalar::all(0), -1, -1, 0); //ë°˜ì§€ë¦„ 20ì¸ ê²€ì • ì›
 	
 	Mat mag_img2;
-	multiply(mag_img, mask_img, mag_img2); //¸¶½ºÅ©¿Í mag_img °öÇØ¼­ ÀúÀå
-	imshow("mag_img2", mag_img2); //mag_img2 Ãâ·Â
+	multiply(mag_img, mask_img, mag_img2); //ë§ˆìŠ¤í¬ì™€ mag_img ê³±í•´ì„œ ì €ì¥
+	imshow("mag_img2", mag_img2); //mag_img2 ì¶œë ¥
 
-	normalize(mag_img2, mag_img2, (float)minVal, (float)maxVal, NORM_MINMAX); //Á¤±ÔÈ­
+	normalize(mag_img2, mag_img2, (float)minVal, (float)maxVal, NORM_MINMAX); //ì •ê·œí™”
 	/*2D IDFT*/
 	Mat complex_img2 = setComplex(mag_img2, pha_img); 
 	Mat dst_img = doIdft(complex_img2);
@@ -255,8 +255,8 @@ Mat myFilter(Mat src_img) {
 	Mat mask_img = Mat::ones(mag_img.size(), CV_32F);
 
 	
-	circle(mask_img, Point(mask_img.cols / 2, mask_img.rows / 2 ) , 20, Scalar::all(0), -1, -1, 0); // ¹İÁö¸§ 15ÀÎ Scalar 0 ¿ø
-	circle(mask_img, Point(mask_img.cols / 2, mask_img.rows / 2), 1, Scalar::all(1), -1, -1, 0); //¹İÁö¸§ 2ÀÎ Scalar 1 ¿ø
+	circle(mask_img, Point(mask_img.cols / 2, mask_img.rows / 2 ) , 20, Scalar::all(0), -1, -1, 0); // ë°˜ì§€ë¦„ 15ì¸ Scalar 0 ì›
+	circle(mask_img, Point(mask_img.cols / 2, mask_img.rows / 2), 1, Scalar::all(1), -1, -1, 0); //ë°˜ì§€ë¦„ 2ì¸ Scalar 1 ì›
 	
 
 
