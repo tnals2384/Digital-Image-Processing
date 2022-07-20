@@ -14,10 +14,10 @@ void cvBlobDetection(Mat img) {
     params.minThreshold = 2;
     params.maxThreshold = 300;
     params.filterByArea = true; 
-    params.minArea = 10; //ÃÖ¼Ò¸éÀûÁ¦ÇÑ
-    params.filterByCircularity = true; //¿øÇü¿¡ ¾ó¸¶³ª °¡±î¿îÁö
+    params.minArea = 10; //ìµœì†Œë©´ì ì œí•œ
+    params.filterByCircularity = true; //ì›í˜•ì— ì–¼ë§ˆë‚˜ ê°€ê¹Œìš´ì§€
     params.minCircularity = 0.55;
-    params.filterByConvexity = true; //¾ó¸¶³ª º¼·ÏÇÑÁö
+    params.filterByConvexity = true; //ì–¼ë§ˆë‚˜ ë³¼ë¡í•œì§€
     params.minConvexity = 0.1;
 
 
@@ -26,17 +26,17 @@ void cvBlobDetection(Mat img) {
     std::vector<KeyPoint> keypoints;
     detector->detect(img, keypoints);
 
-    cout << keypoints.size() << "°¢Çü " << endl; //¸î°¢ÇüÀÎÁö Ãâ·Â
+    cout << keypoints.size() << "ê°í˜• " << endl; //ëª‡ê°í˜•ì¸ì§€ ì¶œë ¥
 }
 
 void cvHarrisCorner() {
-    Mat figure[4]; //»ï°¢Çü,»ç°¢Çü,¿À°¢Çü,À°°¢Çü ÀÌ¹ÌÁö¸¦ ÀĞ¾î figure¹è¿­¿¡ ³Ö±â
+    Mat figure[4]; //ì‚¼ê°í˜•,ì‚¬ê°í˜•,ì˜¤ê°í˜•,ìœ¡ê°í˜• ì´ë¯¸ì§€ë¥¼ ì½ì–´ figureë°°ì—´ì— ë„£ê¸°
     figure[0] = imread("triangle.png");
     figure[1] = imread("rect.png");
     figure[2] = imread("pentagon.png");
     figure[3] = imread("hexagon.png");
 
-    for (int i = 0; i < 4; i++) { //4°¢ÇüºÎÅÍ À°°¢Çü±îÁö
+    for (int i = 0; i < 4; i++) { //4ê°í˜•ë¶€í„° ìœ¡ê°í˜•ê¹Œì§€
         Mat img = figure[i]; 
         
         if (img.empty()) {
@@ -44,17 +44,17 @@ void cvHarrisCorner() {
             exit(1);
         }
 
-        resize(img, img, Size(500, 500), 0, 0, INTER_CUBIC); //500,500À¸·Î resize
+        resize(img, img, Size(500, 500), 0, 0, INTER_CUBIC); //500,500ìœ¼ë¡œ resize
 
         Mat gray;
-        cvtColor(img, gray, CV_BGR2GRAY); //Èæ¹éÀÌ¹ÌÁö·Î º¯È¯
+        cvtColor(img, gray, CV_BGR2GRAY); //í‘ë°±ì´ë¯¸ì§€ë¡œ ë³€í™˜
 
         Mat harr;
         cornerHarris(gray, harr, 2, 3, 0.04, BORDER_DEFAULT); //harriscorner
-        normalize(harr, harr, 0, 255, NORM_MINMAX, CV_32FC1, Mat()); //Á¤±ÔÈ­
+        normalize(harr, harr, 0, 255, NORM_MINMAX, CV_32FC1, Mat()); //ì •ê·œí™”
 
         Mat harr_abs;
-        convertScaleAbs(harr, harr_abs); //Àı´ñ°ªÀ¸·Î º¯È¯
+        convertScaleAbs(harr, harr_abs); //ì ˆëŒ“ê°’ìœ¼ë¡œ ë³€í™˜
 
         //Print corners
         int thresh = 125;
@@ -62,10 +62,10 @@ void cvHarrisCorner() {
         for (int y = 0; y < harr.rows; y += 1) {
             for (int x = 0; x < harr.cols; x += 1) {
                 if ((int)harr.at<float>(y, x) > thresh)
-                    circle(result, Point(x, y), 7, Scalar(255, 0, 255), 0, 4, 0); //ÄÚ³ÊºÎºĞÀ» ¿øÀ¸·Î Ç¥½Ã
+                    circle(result, Point(x, y), 7, Scalar(255, 0, 255), 0, 4, 0); //ì½”ë„ˆë¶€ë¶„ì„ ì›ìœ¼ë¡œ í‘œì‹œ
             }
         }
-        cvBlobDetection(result); //blob detection ½ÇÇà
+        cvBlobDetection(result); //blob detection ì‹¤í–‰
         imshow("Source image", img);
         imshow("Harris image", harr_abs);
         imshow("Target image", result);
@@ -80,29 +80,29 @@ void cvCoinDetection() {
     Mat img = imread("coin.png", IMREAD_COLOR);
 
     SimpleBlobDetector::Params params;
-    params.minThreshold = 10; //ÃÖ¼Ò threshold°ª
-    params.maxThreshold = 300; //ÃÖ´ë threshold°ª 
-    params.filterByArea = true; //ÃÖ¼Ò ÃÖ´ë ¸éÀû Á¦ÇÑ
-    params.minArea = 300; //ÃÖ¼Ò
-    params.maxArea = 10000; //ÃÖ´ë
-    params.filterByCircularity = true; //¿øÇü¿¡ ¾ó¸¶³ª °¡±î¿îÁö Á¦ÇÑ
+    params.minThreshold = 10; //ìµœì†Œ thresholdê°’
+    params.maxThreshold = 300; //ìµœëŒ€ thresholdê°’ 
+    params.filterByArea = true; //ìµœì†Œ ìµœëŒ€ ë©´ì  ì œí•œ
+    params.minArea = 300; //ìµœì†Œ
+    params.maxArea = 10000; //ìµœëŒ€
+    params.filterByCircularity = true; //ì›í˜•ì— ì–¼ë§ˆë‚˜ ê°€ê¹Œìš´ì§€ ì œí•œ
     params.minCircularity = 0.65;
-    params.filterByConvexity = true; //³»ºÎ°¡ ¾ó¸¶³ª º¼·ÏÈ÷ Ã¤¿öÁö´ÂÁö Á¦ÇÑ
+    params.filterByConvexity = true; //ë‚´ë¶€ê°€ ì–¼ë§ˆë‚˜ ë³¼ë¡íˆ ì±„ì›Œì§€ëŠ”ì§€ ì œí•œ
     params.minConvexity = 0.9;
-    params.filterByInertia = true; //Å¸¿øÀÌ ¿ø¿¡ ¾ó¸¶³ª °¡±î¿îÁö Á¦ÇÑ
+    params.filterByInertia = true; //íƒ€ì›ì´ ì›ì— ì–¼ë§ˆë‚˜ ê°€ê¹Œìš´ì§€ ì œí•œ
     params.minInertiaRatio = 0.04;
 
-    Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params); //blob detector¼±¾ğ
+    Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params); //blob detectorì„ ì–¸
 
     std::vector<KeyPoint> keypoints;
-    detector->detect(img, keypoints); //ÀÌ¹ÌÁö¿¡¼­ keypoints °¨Áö
+    detector->detect(img, keypoints); //ì´ë¯¸ì§€ì—ì„œ keypoints ê°ì§€
 
     Mat result;
-    //resultÀÌ¹ÌÁö¿¡ °¨ÁöÇÑ blob ±×¸®±â
+    //resultì´ë¯¸ì§€ì— ê°ì§€í•œ blob ê·¸ë¦¬ê¸°
     drawKeypoints(img, keypoints, result, Scalar(255, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     imshow("keypoints", result);
 
-    cout << "µ¿ÀüÀÇ °³¼ö: " << keypoints.size() << endl;// size()¸¦ ÅëÇØ ¿øÀÇ °³¼ö Ãâ·Â
+    cout << "ë™ì „ì˜ ê°œìˆ˜: " << keypoints.size() << endl;// size()ë¥¼ í†µí•´ ì›ì˜ ê°œìˆ˜ ì¶œë ¥
     waitKey(0);
     destroyAllWindows();
 }
@@ -124,7 +124,7 @@ Mat warpPers(Mat src) {
     dst_p[3] = Point2f(1000, 700);
 
     Mat pers_mat = getPerspectiveTransform(src_p, dst_p);
-    warpPerspective(src, dst, pers_mat, Size(1200, 800)); //src_p°¡ dst_pÀÇ À§Ä¡·Î ´ëÀÀµÊ
+    warpPerspective(src, dst, pers_mat, Size(1200, 800)); //src_pê°€ dst_pì˜ ìœ„ì¹˜ë¡œ ëŒ€ì‘ë¨
     return dst;
 }
 
@@ -132,27 +132,27 @@ void cvFeatureSIFT() {
     Mat img = imread("church.jpg", 1);
     // /*orginal sift*/
     Mat gray;
-    cvtColor(img, gray, CV_BGR2GRAY); //grayscale·Î º¯È¯
-    Ptr<SiftFeatureDetector>detector = SiftFeatureDetector::create(); //detector¼±¾ğ
+    cvtColor(img, gray, CV_BGR2GRAY); //grayscaleë¡œ ë³€í™˜
+    Ptr<SiftFeatureDetector>detector = SiftFeatureDetector::create(); //detectorì„ ì–¸
     std::vector<KeyPoint> keypoints;
-    detector->detect(gray, keypoints); //keypoints°¨Áö
+    detector->detect(gray, keypoints); //keypointsê°ì§€
 
     Mat original;
     drawKeypoints(img, keypoints, original);
     imwrite("sift_original.jpg", original);
-    imshow("Sift original", original); //original SIFTÀÌ¹ÌÁö Ãâ·Â
+    imshow("Sift original", original); //original SIFTì´ë¯¸ì§€ ì¶œë ¥
 
-    /* Åõ½Ãº¯È¯ & ¹à±âº¯È­ ÈÄ SIFT */
-    img = warpPers(img); //Åõ½Ãº¯È¯ ½ÇÇà
-    cvtColor(img, gray, CV_BGR2GRAY); //grayscaleº¯È¯
-    gray += 50; //¹à±â 50 ¿Ã¸®±â
+    /* íˆ¬ì‹œë³€í™˜ & ë°ê¸°ë³€í™” í›„ SIFT */
+    img = warpPers(img); //íˆ¬ì‹œë³€í™˜ ì‹¤í–‰
+    cvtColor(img, gray, CV_BGR2GRAY); //grayscaleë³€í™˜
+    gray += 50; //ë°ê¸° 50 ì˜¬ë¦¬ê¸°
     detector = SiftFeatureDetector::create();
     detector->detect(gray, keypoints);
 
     Mat result;
     drawKeypoints(img, keypoints, result);
     imwrite("sift_result.jpg", result);
-    imshow("Sift result", result); //Åõ½Ãº¯È¯,¹à±âº¯È¯ ÈÄ SIFTÀÌ¹ÌÁö Ãâ·Â
+    imshow("Sift result", result); //íˆ¬ì‹œë³€í™˜,ë°ê¸°ë³€í™˜ í›„ SIFTì´ë¯¸ì§€ ì¶œë ¥
     waitKey(0);
     destroyAllWindows();
 }
