@@ -2,9 +2,9 @@
 #include <iomanip>
 #include <math.h>
 #include <string.h>
-#include "opencv2/core/core.hpp" // Mat class¿Í °¢Á¾ data structure ¹× »ê¼ú ·çÆ¾À» Æ÷ÇÔÇÏ´Â Çì´õ
-#include "opencv2/highgui/highgui.hpp" // GUI¿Í °ü·ÃµÈ ¿ä¼Ò¸¦ Æ÷ÇÔÇÏ´Â Çì´õ(imshow µî)
-#include "opencv2/imgproc/imgproc.hpp" // °¢Á¾ ÀÌ¹ÌÁö Ã³¸® ÇÔ¼ö¸¦ Æ÷ÇÔÇÏ´Â Çì´õ
+#include "opencv2/core/core.hpp" // Mat classì™€ ê°ì¢… data structure ë° ì‚°ìˆ  ë£¨í‹´ì„ í¬í•¨í•˜ëŠ” í—¤ë”
+#include "opencv2/highgui/highgui.hpp" // GUIì™€ ê´€ë ¨ëœ ìš”ì†Œë¥¼ í¬í•¨í•˜ëŠ” í—¤ë”(imshow ë“±)
+#include "opencv2/imgproc/imgproc.hpp" // ê°ì¢… ì´ë¯¸ì§€ ì²˜ë¦¬ í•¨ìˆ˜ë¥¼ í¬í•¨í•˜ëŠ” í—¤ë”
 using namespace cv;
 using namespace std;
 
@@ -184,7 +184,7 @@ void exGrabcut_flower() {
 	if (img.empty()) exit(-1);
 	imshow("original", img);
 
-	//flower »ç°¢Çü
+	//flower ì‚¬ê°í˜•
     Rect rect = Rect(Point(50, 20), Point(500, 400));
 
 	Mat result, bg_model, fg_model;
@@ -207,7 +207,7 @@ void exGrabcut_grape() {
 	if (img.empty()) exit(-1);
 	imshow("original", img);
 
-	//grape »ç°¢Çü
+	//grape ì‚¬ê°í˜•
 	Rect rect = Rect(Point(160, 20), Point(450, 300));
 
 	Mat result, bg_model, fg_model;
@@ -228,7 +228,7 @@ void exGrabcut_tree() {
 	if (img.empty()) exit(-1);
 	imshow("original", img);
 
-	//tree »ç°¢Çü
+	//tree ì‚¬ê°í˜•
 	Rect rect = Rect(Point(50, 0), Point(400, 350));
 
 	Mat result, bg_model, fg_model;
