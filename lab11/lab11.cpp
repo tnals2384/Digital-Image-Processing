@@ -19,7 +19,7 @@ using namespace std;
 using namespace cv;
 
 int ex1() {
-	//random colors »ı¼º
+	//random colors ìƒì„±
 	vector<Scalar> colors;
 	RNG rng;
 	for (int i = 0; i < 100; i++) {
@@ -34,40 +34,40 @@ int ex1() {
 
 	//Take first frame and find corners in it
 	old_frame = imread("1.jpg", 1);
-	//old_frame = imread("111.jpg",1); //Ã¹¹øÂ° ¿µ»ó ÀÔ·Â
-	cvtColor(old_frame, old_gray, COLOR_BGR2GRAY); //grayscale º¯È¯
-	goodFeaturesToTrack(old_gray, p0, 100, 0.3, 7, Mat(), 7, false, 0.04); //ÄÚ³ÊÁ¡À» Ã£´Â ÇÔ¼ö
+	//old_frame = imread("111.jpg",1); //ì²«ë²ˆì§¸ ì˜ìƒ ì…ë ¥
+	cvtColor(old_frame, old_gray, COLOR_BGR2GRAY); //grayscale ë³€í™˜
+	goodFeaturesToTrack(old_gray, p0, 100, 0.3, 7, Mat(), 7, false, 0.04); //ì½”ë„ˆì ì„ ì°¾ëŠ” í•¨ìˆ˜
 
 	//Create a mask image for drawing purposes
 	Mat mask = Mat::zeros(old_frame.size(), old_frame.type());
 
 	while (true) {
 		Mat frame, frame_gray;
-		frame = imread("2.jpg", 1); //µÎ¹ø¤Š ¿µ»óÀÔ·Â
-		//frame = imread("222.jpg", 1); //µÎ¹ø¤Š ¿µ»óÀÔ·Â
-		cvtColor(frame, frame_gray, COLOR_BGR2GRAY); //grayscale º¯È¯
+		frame = imread("2.jpg", 1); //ë‘ë²ˆÂŠ ì˜ìƒì…ë ¥
+		//frame = imread("222.jpg", 1); //ë‘ë²ˆÂŠ ì˜ìƒì…ë ¥
+		cvtColor(frame, frame_gray, COLOR_BGR2GRAY); //grayscale ë³€í™˜
 
-		// optical flow °è»ê
+		// optical flow ê³„ì‚°
 		vector<uchar> status;
 		vector<float> err;
 		TermCriteria criteria = TermCriteria((TermCriteria::COUNT) + (TermCriteria::EPS), 10, 0.03);
 		calcOpticalFlowPyrLK(old_gray, frame_gray, p0, p1, status, err, Size(15, 15), 2, criteria);
 
 		Mat dst;
-		addWeighted(frame, 0.5, old_frame, 0.5, 0,dst); //µÎ¿µ»óÀ» 0,5 ,0,5·Î blending
+		addWeighted(frame, 0.5, old_frame, 0.5, 0,dst); //ë‘ì˜ìƒì„ 0,5 ,0,5ë¡œ blending
 
 		vector<Point2f> good_new;
 		for (uint i = 0; i < p0.size(); i++) {
-			//good points ¼±ÅÃ
+			//good points ì„ íƒ
 			if (status[i] == 1) {
 				good_new.push_back(p1[i]);
-				//¾î´ÀÁ¤µµ ÀÌµ¿Çß´ÂÁö Ç¥½Ã
+				//ì–´ëŠì •ë„ ì´ë™í–ˆëŠ”ì§€ í‘œì‹œ
 				line(mask, p1[i], p0[i], colors[i], 2);
 				circle(frame, p1[i], 5, colors[i], -1);
 			}
 		}
 		Mat img;
-		add(dst, mask, img); //dst°ú maskÇÕÄ¡±â
+		add(dst, mask, img); //dstê³¼ maskí•©ì¹˜ê¸°
 
 		imshow("Frame", img);
 
@@ -85,7 +85,7 @@ int ex1() {
 
 
 
-		/*ÆÄ³×º¤ ¾Ë°í¸®Áò*/
+		/*íŒŒë„¤ë²¡ ì•Œê³ ë¦¬ì¦˜*/
 int ex2() {
 	VideoCapture capture(samples::findFile("test.mp4"));
 	if (!capture.isOpened()) {
@@ -95,24 +95,24 @@ int ex2() {
 	}
 	
 	Mat frame1, prvs;
-	capture >> frame1; //frame1 Ä¸Ã³
-	cvtColor(frame1, prvs, COLOR_BGR2GRAY); //grayscale·Î º¯È¯
+	capture >> frame1; //frame1 ìº¡ì²˜
+	cvtColor(frame1, prvs, COLOR_BGR2GRAY); //grayscaleë¡œ ë³€í™˜
 
 	while (true) {
 		Mat frame2, next;
-		capture >> frame2; //frame2 Ä¸ÃÄ
+		capture >> frame2; //frame2 ìº¡ì³
 		if (frame2.empty()) break;
-		cvtColor(frame2, next, COLOR_BGR2GRAY); //grayscale º¯È¯
+		cvtColor(frame2, next, COLOR_BGR2GRAY); //grayscale ë³€í™˜
 
 		Mat flow(prvs.size(), CV_32FC2);
-		calcOpticalFlowFarneback(prvs, next, flow, 0.5, 3, 15, 3, 5, 1.2, 0); //ÆÄ³×¹é ¾Ë°í¸®Áò ¼öÇà
+		calcOpticalFlowFarneback(prvs, next, flow, 0.5, 3, 15, 3, 5, 1.2, 0); //íŒŒë„¤ë°± ì•Œê³ ë¦¬ì¦˜ ìˆ˜í–‰
 	
-		/*°İÀÚ¾È¿¡¼­ ¸ğ¼Ç º¤ÅÍ Ç¥½ÃÇÏ±â*/
+		/*ê²©ìì•ˆì—ì„œ ëª¨ì…˜ ë²¡í„° í‘œì‹œí•˜ê¸°*/
 	
 		for (int y = 0; y < frame2.rows; y += 15) {
 			for (int x = 0; x < frame2.cols; x += 15) {
 				const Point2f flowatxy = flow.at<Point2f>(y, x); 
-				/*º¯È­·®¸¸Å­ ¸ğ¼Çº¤ÅÍ Ç¥½ÃÇÏ±â*/
+				/*ë³€í™”ëŸ‰ë§Œí¼ ëª¨ì…˜ë²¡í„° í‘œì‹œí•˜ê¸°*/
 				line(frame2, Point(x, y), Point(cvRound(x + flowatxy.x), cvRound(y + flowatxy.y)), Scalar( 0,255, 0),2,LINE_AA);
 				circle(frame2, Point(x, y), 1, Scalar(0, 255, 0), -1);
 			}
