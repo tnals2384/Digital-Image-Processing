@@ -66,16 +66,16 @@ void myPerspective() {
     Mat src = imread("card_per.png", 1);
    
     Mat gray;
-    cvtColor(src, gray, CV_BGR2GRAY); //Èæ¹éÀÌ¹ÌÁö·Î º¯È¯
+    cvtColor(src, gray, CV_BGR2GRAY); //í‘ë°±ì´ë¯¸ì§€ë¡œ ë³€í™˜
     
    Mat harr;
     cornerHarris(gray, harr, 2, 3, 0.06, BORDER_DEFAULT); //HarrisCorner
-    normalize(harr, harr, 0, 255, NORM_MINMAX, CV_32FC1, Mat()); //Á¤±ÔÈ­
+    normalize(harr, harr, 0, 255, NORM_MINMAX, CV_32FC1, Mat()); //ì •ê·œí™”
     Mat harr_abs;
-    convertScaleAbs(harr, harr_abs); //Àı´ñ°ªÀ¸·Î º¯È¯
+    convertScaleAbs(harr, harr_abs); //ì ˆëŒ“ê°’ìœ¼ë¡œ ë³€í™˜
 
-    Corner corner[200]; //corner Å¬·¡½º »ç¿ë
-    Point2f srcQuad[4]; //¿øº»ÀÌ¹ÌÁöÀÇ Ä«µå ²ÀÁşÁ¡
+    Corner corner[200]; //corner í´ë˜ìŠ¤ ì‚¬ìš©
+    Point2f srcQuad[4]; //ì›ë³¸ì´ë¯¸ì§€ì˜ ì¹´ë“œ ê¼­ì§“ì 
 
     int i = 0;
     //Print corners
@@ -83,62 +83,62 @@ void myPerspective() {
     Mat result = src.clone();
     for (int y = 0; y < harr.rows; y += 1) {
         for (int x = 0; x < harr.cols; x += 1) {
-            if ((int)harr.at<float>(y, x) > thresh) { //threshold°ªº¸´Ù ÀÛ´Ù¸é
-                if ((int)harr.at<float>(y, x) > (int)harr.at<float>(y - 1, x) && // °°Àº ÁÂÇ¥¿¡ ¿©·¯°³ÀÇ ÄÚ³Ê °¨Áö¸¦ ¹æÁö
+            if ((int)harr.at<float>(y, x) > thresh) { //thresholdê°’ë³´ë‹¤ ì‘ë‹¤ë©´
+                if ((int)harr.at<float>(y, x) > (int)harr.at<float>(y - 1, x) && // ê°™ì€ ì¢Œí‘œì— ì—¬ëŸ¬ê°œì˜ ì½”ë„ˆ ê°ì§€ë¥¼ ë°©ì§€
                     (int)harr.at<float>(y, x) > (int)harr.at<float>(y + 1, x) &&
                     (int)harr.at<float>(y, x) > (int)harr.at<float>(y, x - 1) &&
                     (int)harr.at<float>(y, x) > (int)harr.at<float>(y, x + 1)) {
-                    circle(result, Point(x, y), 5, Scalar(255, 0, 255), 0, 4, 0); //ÄÚ³ÊºÎºĞÀ» ¿øÀ¸·Î Ç¥½Ã
-                    corner[i].x = x; //ÁÂÇ¥¸¦ cornerÅ¬·¡½º ¹è¿­¿¡ Ãß°¡
+                    circle(result, Point(x, y), 5, Scalar(255, 0, 255), 0, 4, 0); //ì½”ë„ˆë¶€ë¶„ì„ ì›ìœ¼ë¡œ í‘œì‹œ
+                    corner[i].x = x; //ì¢Œí‘œë¥¼ cornerí´ë˜ìŠ¤ ë°°ì—´ì— ì¶”ê°€
                     corner[i].y = y;
                     i++;
                 }
             }
         }
     }
-    imshow("circle", result); //ÄÚ³Ê¸¦ ¿øÀ¸·Î Ç¥½ÃÇÑ ÀÌ¹ÌÁö Ãâ·Â
+    imshow("circle", result); //ì½”ë„ˆë¥¼ ì›ìœ¼ë¡œ í‘œì‹œí•œ ì´ë¯¸ì§€ ì¶œë ¥
     
     int max_y = 0; int min_y = 0; 
-    /*xÁÂÇ¥°¡ °¡·Î Áß¾Ó°ªº¸´Ù ÀÛÀ» ¶§ yÃÖ¼Ò°ª ±¸ÇÏ±â-> srcQuad[0]*/
+    /*xì¢Œí‘œê°€ ê°€ë¡œ ì¤‘ì•™ê°’ë³´ë‹¤ ì‘ì„ ë•Œ yìµœì†Œê°’ êµ¬í•˜ê¸°-> srcQuad[0]*/
     for (int j = 0; j < i; j++) {
         if (j == 0) {
             min_y = corner[j].y;
         }
         if (min_y >= corner[j].y && harr.cols / 2 > corner[j].x) {
             min_y = corner[j].y;
-            srcQuad[0] = Point2f(corner[j].x, corner[j].y);//y°¡ ÃÖ¼ÒÀÏ ¶§ x,yÁÂÇ¥¸¦ srcQuad[0]À¸·Î ¼³Á¤
+            srcQuad[0] = Point2f(corner[j].x, corner[j].y);//yê°€ ìµœì†Œì¼ ë•Œ x,yì¢Œí‘œë¥¼ srcQuad[0]ìœ¼ë¡œ ì„¤ì •
         }
     }
 
-    /*xÁÂÇ¥°¡ °¡·Î Áß¾Ó°ªº¸´Ù ÀÛÀ» ¶§ yÃÖ´ë°ª ±¸ÇÏ±â-> srcQuad[1]*/
+    /*xì¢Œí‘œê°€ ê°€ë¡œ ì¤‘ì•™ê°’ë³´ë‹¤ ì‘ì„ ë•Œ yìµœëŒ€ê°’ êµ¬í•˜ê¸°-> srcQuad[1]*/
     for (int j = 0; j < i; j++) {
         if (j == 0) {
             max_y= corner[j].y;
         }
         if (max_y <= corner[j].y && harr.cols/2 > corner[j].x) {
             max_y = corner[j].y;
-            srcQuad[1] =Point2f(corner[j].x, corner[j].y);//y°¡ ÃÖ´ëÀÏ ¶§ x,yÁÂÇ¥¸¦ srcQuad[0]À¸·Î ¼³Á¤
+            srcQuad[1] =Point2f(corner[j].x, corner[j].y);//yê°€ ìµœëŒ€ì¼ ë•Œ x,yì¢Œí‘œë¥¼ srcQuad[0]ìœ¼ë¡œ ì„¤ì •
         }
     }
     
-    /*xÁÂÇ¥°¡ °¡·Î Áß¾Ó°ªº¸´Ù Å¬ ¶§ yÃÖ¼Ò°ª ±¸ÇÏ±â-> srcQuad[2]*/
-    for (int j = i-1; j >=0; j--) { //j=0ºÎÅÍ µ¹¸é xÁÂÇ¥°¡ °¡·Î Áß¾Ó°ªº¸´Ù ÀÛÀ»¶§ºÎÅÍ ½ÃÀÛÇÏ¹Ç·Î
-        if (j==i-1) {                 //i-1ºÎÅÍ j--ÇÏ¸é¼­ µ¹±â
+    /*xì¢Œí‘œê°€ ê°€ë¡œ ì¤‘ì•™ê°’ë³´ë‹¤ í´ ë•Œ yìµœì†Œê°’ êµ¬í•˜ê¸°-> srcQuad[2]*/
+    for (int j = i-1; j >=0; j--) { //j=0ë¶€í„° ëŒë©´ xì¢Œí‘œê°€ ê°€ë¡œ ì¤‘ì•™ê°’ë³´ë‹¤ ì‘ì„ë•Œë¶€í„° ì‹œì‘í•˜ë¯€ë¡œ
+        if (j==i-1) {                 //i-1ë¶€í„° j--í•˜ë©´ì„œ ëŒê¸°
             min_y = corner[j].y;
         }
         if (min_y >= corner[j].y && harr.cols / 2 <= corner[j].x) {
             min_y = corner[j].y;
-            srcQuad[2] = Point2f(corner[j].x, corner[j].y); //y°¡ ÃÖ¼ÒÀÏ ¶§ x,yÁÂÇ¥¸¦ srcQuad[2]À¸·Î ¼³Á¤
+            srcQuad[2] = Point2f(corner[j].x, corner[j].y); //yê°€ ìµœì†Œì¼ ë•Œ x,yì¢Œí‘œë¥¼ srcQuad[2]ìœ¼ë¡œ ì„¤ì •
         }
     }
-    /*xÁÂÇ¥°¡ °¡·Î Áß¾Ó°ªº¸´Ù Å¬ ¶§ yÃÖ´ë°ª ±¸ÇÏ±â-> srcQuad[3]*/
+    /*xì¢Œí‘œê°€ ê°€ë¡œ ì¤‘ì•™ê°’ë³´ë‹¤ í´ ë•Œ yìµœëŒ€ê°’ êµ¬í•˜ê¸°-> srcQuad[3]*/
     for (int j = 0; j < i; j++) {
         if (j == 0) {
             max_y = corner[j].y;
         }
         if (max_y <= corner[j].y && harr.cols / 2 <= corner[j].x) {
             max_y = corner[j].y;
-            srcQuad[3] = Point2f(corner[j].x, corner[j].y); //y°¡ ÃÖ´ëÀÏ ¶§ x,yÁÂÇ¥¸¦ srcQuad[3]À¸·Î ¼³Á¤
+            srcQuad[3] = Point2f(corner[j].x, corner[j].y); //yê°€ ìµœëŒ€ì¼ ë•Œ x,yì¢Œí‘œë¥¼ srcQuad[3]ìœ¼ë¡œ ì„¤ì •
         }
     }
     Mat dst, matrix;
@@ -148,7 +148,7 @@ void myPerspective() {
     dstQuad[2] = Point2f(450, 140);
     dstQuad[3] = Point2f(450, 360);
 
-    matrix = getPerspectiveTransform(srcQuad, dstQuad); //src°¡ dstÀÇ À§Ä¡·Î ´ëÀÀµÊ
+    matrix = getPerspectiveTransform(srcQuad, dstQuad); //srcê°€ dstì˜ ìœ„ì¹˜ë¡œ ëŒ€ì‘ë¨
     warpPerspective(src, dst, matrix, src.size());
 
     imwrite("nonper.jpg", src);
